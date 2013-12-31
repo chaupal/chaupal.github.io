@@ -16,23 +16,55 @@
     <div class="wrapper">
       <header>
         <h1><a href="index.html">The Chaupal Organisation</a></h1>
-        <h4>Projects Roadmap</h4>
-
+        <h4>Project Roadmap</h4>
+		
+		<p>We're migrating our development infrastructure and planning
+			a 2.8x series of releases.</p>
       </header>
       <section>
-<p>The complete source history for JXSE has been migrated from the <a
+      	
+      	<h3>Migration to Git and GitHub</h3>
+      	<dl>
+      		<dt>[DONE]</dt>
+      		<dd>The complete source history for JXSE has been migrated from the <a
 href="https://svn.java.net/svn/jxta-jxse~svn/">Java.Net Subversion
 Repository</a> to the <a href="https://github.com/chaupal/jxse.git">Chaupal JXSE
-Github repository</a>.</p>
-
-<p>Work will continue to merge changes from the 2.6x series, and from other
-developer's repositories back into this new master repository, in preparation
-for a 2.8x series of releases.</p>
-
-<p>Since the <a href="jxta-license.txt">JXTA/JXSE license</a> cannot be changed, all code contributed to the 
+Github repository</a>. All tags and branches have been preserved, thanks to
+<a href="https://github.com/nirvdrum/svn2git">svn2git</a>.
+<br><br>
+Note:  Since the <a href="jxta-license.txt">JXTA/JXSE license</a> cannot be changed, all code contributed to the 
 <a href="https://github.com/chaupal/jxse.git">Chaupal JXSE Github repository</a> is governed by it. All new code must be committed to the 
 <a href="https://github.com/chaupal/jp2p.git">Chaupal JP2P Github repository</a> which is governed by the Apache License, version 2.0.
-</p>
+</dd>
+
+			<dt>[DOING]</dt>
+			<dd>Create new project home page. Well, you're reading it :)</dd>
+			
+			<dt>[TODO]</dt>
+			<dd>Provide a continuous build of our source repositories. We're
+				considering several alternatives.</dd>
+
+			<dt>[TODO]</dt>
+			<dd>Set up facility to publish to Maven Central repository, ensure
+				keys are available to administrators.</dd>
+
+			<dt>[TODO]</dt>
+			<dd>Provide public relay/rendezvous servers.</dd>
+								
+			<dt>[DOING]</dt>
+			<dd>Prepare for the 2.8x releases; new programmer's guide.</dd>
+
+			<dt>[TODO]</dt>
+			<dd>Add HTTP Tunnelling back into mainline Netty; upgrage to the
+				latest version of Netty.</dd>
+
+			<dt>[TODO]</dt>
+			<dd>Merge changes from the 2.6x series, and from other
+developer's repositories (Amalto), and Android changes back into this new master
+repository</dd>
+
+      	</dl>
+
 
       </section>
       <footer>
