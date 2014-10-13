@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="JXSE 2.8x OSGI Bundles" url="https://chaupal.github.io/releases/jxse-osgi/2.8.0/milestone/20141013/site.xml">
+      The core bundles to get JXSE 2.8x working in OSGI
+   </description>
+   <feature url="features/net.jxse.feature_1.0.3.v20141012.jar" id="net.jxse.feature" version="1.0.3.v20141012">
+      <category name="org.jxse"/>
+   </feature>
+   <category-def name="org.jxse" label="JXSE Core">
+      <description>
+         The core bundles to get JXSE 2.8x working in OSGI
+      </description>
+   </category-def>
+</site>
