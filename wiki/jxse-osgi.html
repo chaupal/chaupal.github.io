@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>The Chaupal Organisation</title>
 
-    <link rel="stylesheet" href="http://chaupal.github.io/stylesheets/styles.css">
-    <link rel="stylesheet" href="http://chaupal.github.io/stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/codeblock.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   </head>
@@ -26,169 +27,116 @@ Perspective of the IDE.</P>
 <H2 >Setting up</H2>
 <P >Setting up the JXSE bundles in the Eclipse IDE
 comprises of the following steps:</P>
-<OL>
-	<LI>Setting up a general Eclipse project</li>
-	<LI>Creating a target and a launch configuration
-	in the project</li>
-	<LI>Creating an JXSE bundle project</li> 
-</OL>
 <UL>
-	<LI><P  STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace">Select
-	new &rarr; other&rarr; general &rarr; project <FONT FACE="Times New Roman, serif">and
-	press 'OK'</FONT></FONT></P>
+	<LI>Setting up a general Eclipse project</LI>
+	<LI>Creating a target and a launch configuration
+	in the project</LI>
+	<LI>Creating an JXSE bundle project</LI> 
+	<LI> Select  <font FACE="Courier New, monospace">
+	new &rarr; other&rarr; general &rarr; project <font FACE="Times New Roman, serif">and
+	press 'OK'</font></font></LI>
 </UL>
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">A
+<P>A
 project is created in the workspace, in which we next define a target
-definition</FONT></P>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE=Courier New, monospace">(new &rarr; target definition)
-</FONT>.
-Start with an empty definition and select a name of your choosing ,</FONT></P>
-<P  STYLE="margin-bottom: 0cm">
-</P>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Next
-add two update sites:</FONT></P>
+definition</P>
+<P>(new &rarr; target definition)
+Start with an empty definition and select a name of your choosing ,</P>
+<P>Next add two update sites:</P>
 <table>
 <tr>
   <td>
-    <p STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">The Luna update site</p>
-     <P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Select the Eclipse Platform</FONT></P>
+    <p>The Luna update site</p>
+     <P>Select the Eclipse Platform</P>
    </td>
    <td>
-     <A HREF="http://download.eclipse.org/eclipse/updates/4.4">http://download.eclipse.org/eclipse/updates/4.4</A></FONT></P>
+     <A HREF="http://download.eclipse.org/eclipse/updates/4.4">http://download.eclipse.org/eclipse/updates/4.4</A>
    </td>
 </tr>
 <tr>
-  <td> <P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">The JXSE-OSGI bundles:
-       <P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Select the Eclipse Platform</FONT></P>
+  <td> <P>The JXSE-OSGI bundles:</P>
+       <P>Select the Eclipse Platform</P>
   </td>
   <td>
-    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A></FONT></P>
-    <P STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Select the bundles</FONT></P>
+    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A>
+    <P>Select the bundles</P>
   </td>  
 </tr>
 </table>
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">(the latest releases can be found here: 
-<A HREF="https://chaupal.github.io/releases.html">https://chaupal.github.io/releases.html</A>)</FONT></P>
+<P>(the latest releases can be found here: 
+<A HREF="https://chaupal.github.io/releases.html">https://chaupal.github.io/releases.html</A>)</P>
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Then
-set the target definition.</FONT></P>
-<H1 ><FONT FACE="Times New Roman, serif">Creating an
-OSGI Bundle Project</FONT></H1>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Now
-we have the target set up, we can create a bundle project. This is
-done in the regular fashion. Let's call the project </FONT><FONT FACE="Courier New, monospace">org.jxse.test</FONT><FONT FACE="Times New Roman, serif">.
+<P>Then set the target definition.</P>
+<H1 >Creating an OSGI Bundle Project</H1>
+<P >Now we have the target set up, we can create a bundle project. This is
+done in the regular fashion. Let's call the project <FONT FACE="Courier New, monospace">org.jxse.test</FONT><FONT FACE="Times New Roman, serif">.
  Next create a Declarative Service component in </FONT><FONT FACE="Courier New, monospace">OSGI-INF/jxta.xml</FONT><FONT FACE="Times New Roman, serif">
 with the following code:</FONT></P>
 
-<code>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">&lt;?xml
-version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;<BR> 
-&lt;scr:component name=&quot;org.jxse.test&quot; immediate=&quot;true&quot;<BR>
-       deactivate=&quot;deactivate&quot; activate=&quot;activate&quot;<BR>
+<pre class="xml-code">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;scr:component name=&quot;org.jxse.test&quot; immediate=&quot;true&quot;
+       deactivate=&quot;deactivate&quot; activate=&quot;activate&quot;
        xmlns:scr=&quot;<A HREF="http://www.osgi.org/xmlns/scr/v1.1.0">http://www.osgi.org/xmlns/scr/v1.1.0</A>&quot;&gt;<BR>
-  &lt;implementation class=&quot;org.jxse.test.Component&quot;/&gt;</FONT></FONT></P>
+  &lt;implementation class=&quot;org.jxse.test.Component&quot;/&gt;
+  &lt;reference name=&quot;org.jxse.test.ModuleBuilder&quot;             
+           unbind=&quot;unregisterBuilder&quot; policy=&quot;dynamic&quot; 
+           interface=&quot;net.jxta.module.IModuleBuilder&quot;
+           cardinality=&quot;0..n&quot; bind=&quot;registerBuilder&quot;/&gt;
+&lt;/scr:component&gt;
+</pre>
 
-<P STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">&lt;reference
-name=&quot;org.jxse.test.ModuleBuilder&quot;<BR>               
-unbind=&quot;unregisterBuilder&quot; policy=&quot;dynamic&quot;<BR>  
-           interface=&quot;net.jxta.module.IModuleBuilder&quot;<BR>  
-           cardinality=&quot;0..n&quot; bind=&quot;registerBuilder&quot;/&gt;</FONT></FONT></P>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">&lt;/scr:component&gt;</FONT></FONT></P>
-<P  STYLE="margin-bottom: 0cm"><BR>
-</P>
-</code>
+<P>Then include the following class:></P>
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">Then include the following class:</FONT></P>
-
-<code>
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>package</B></FONT><FONT COLOR="#000000">
-net.jxse.test;</FONT></FONT></FONT>
-
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>import</B></FONT><FONT COLOR="#000000">
-net.jxta.exception.ConfiguratorException;</FONT></FONT></FONT>
-<br><br><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>  import</B></FONT><FONT COLOR="#000000">
-net.osgi.jxse.AbstractJxseComponent;</FONT></FONT></FONT></P>
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>import</B></FONT><FONT COLOR="#000000">
-Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;</FONT></FONT></FONT></P>
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>public</B></FONT><FONT COLOR="#000000">
-</FONT><FONT COLOR="#7f0055"><B>class</B></FONT><FONT COLOR="#000000">
-Component </FONT><FONT COLOR="#7f0055"><B>extends</B></FONT><FONT COLOR="#000000">AbstractJxseComponent{</FONT></FONT></FONT>
-<br><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">	
-<br></FONT><FONT COLOR="#646464">@Override</FONT></FONT></FONT>
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">	
-<br></FONT><FONT COLOR="#7f0055"><B>protected</B></FONT><FONT COLOR="#000000">
-</FONT><FONT COLOR="#7f0055"><B>void</B></FONT><FONT COLOR="#000000">
-onRunJxse() {</FONT></FONT></FONT>
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">		
-<br></FONT><FONT COLOR="#7f0055"><B>try</B></FONT><FONT COLOR="#000000">
-{</FONT></FONT></FONT>
-<br><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">			
-    _100_Starting_And_Stopping_JXTA_Example.</FONT><FONT COLOR="#000000"><I>main</I></FONT><FONT COLOR="#000000">(</FONT><FONT COLOR="#7f0055"><B>null</B></FONT><FONT COLOR="#000000">
-);</FONT></FONT></FONT>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">		}
-</FONT><FONT COLOR="#7f0055"><B>catch</B></FONT><FONT COLOR="#000000">
-(ConfiguratorException </FONT><FONT COLOR="#6a3e3e">e</FONT><FONT COLOR="#000000">)
-{</FONT></FONT></FONT>
-<FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000"></FONT><FONT COLOR="#6a3e3e">e</FONT>
-<br><FONT COLOR="#000000">.printStackTrace();</FONT></FONT></FONT>
-<br><FONT COLOR="#000000"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2>}</FONT></FONT></FONT>
-<br><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">}</FONT></FONT></FONT>
-<br><FONT COLOR="#000000"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2>}</FONT></FONT></FONT>
-</code>
-
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">
- Next we have to create a launch configuration for an OSGI framework.
+<pre class="code">
+  <java class="java">package</java> org.jxse.test;<br>
+  <java class="java">import</java> net.jxta.exception.ConfiguratorException;
+  <java class="java">import</java> net.osgi.jxse.AbstractJxseComponent;
+  <java class="java">import</java> Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;<br>
+  <java class="java">public class </java>Component <java class="java">extends </java>AbstractJxseComponent{
+  <br>   @Override
+  <java class="java"> protected void</java> onRunJxse() {
+  <java class="java">   try</java>
+          _100_Starting_And_Stopping_JXTA_Example.<I>main (</I><java class="java"> null</java> )
+      }
+  <java class="java">   catch</java>( ConfiguratorException e ){
+        e.printStackTrace();
+      }
+   }
+</pre>
+<p>Next we have to create a launch configuration for an OSGI framework.
 Include the bundle we just made, and add the required bundles. Don't
-forget to add:</FONT></P>
-<P  STYLE="margin-bottom: 0cm"></P>
+forget to add:</P>
 <UL>
-	<LI><P  STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace">org.eclipse.equinox.console</FONT></P>
-</UL>
-<UL>
-	<LI><P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">the
-	three </FONT><FONT FACE="Courier New, monospace">org.apache.felix.gogo</FONT><FONT FACE="Times New Roman, serif">
+	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.console</FONT></P>
+	<LI><P>the	three <FONT FACE="Courier New, monospace">org.apache.felix.gogo</FONT><FONT FACE="Times New Roman, serif">
 	bundles</FONT></P>
-	<LI><P  STYLE="margin-bottom: 0cm"><FONT FACE="Courier New, monospace">org.eclipse.equinox.ds</FONT></P>
+	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.ds</FONT></P>
 </UL>
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Times New Roman, serif">When
-you run the code you will find that you are running one of the
+<P>When you run the code you will find that you are running one of the
 examples from J&eacute;r&ocirc;me Verstrynge's book, <A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
 JXTA II</A>. These examples are shipped as one of the bundles in the
 set. If you simply want to run these, the following code will suffice
-as well:</FONT></P>
+as well:</P>
 
-<code>
+<pre class="code">
 
-<P  STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>package</B></FONT><FONT COLOR="#000000">
-net.jxse.test;</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm">
-</P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>import</B></FONT><FONT COLOR="#000000">
-net.jxse.practical.jxta.AbstractPJ2Component;</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm">
-</P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#7f0055"><B>public</B></FONT><FONT COLOR="#000000">
-</FONT><FONT COLOR="#7f0055"><B>class</B></FONT><FONT COLOR="#000000">
-Component </FONT><FONT COLOR="#7f0055"><B>extends</B></FONT><FONT COLOR="#000000">
-AbstractPJ2Component{</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm">
-</P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">	</FONT><FONT COLOR="#7f0055"><B>public</B></FONT><FONT COLOR="#000000">
-Component() {</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2><FONT COLOR="#000000">		</FONT><FONT COLOR="#7f0055"><B>super</B></FONT><FONT COLOR="#000000">(
-Examples.</FONT><FONT COLOR="#0000c0"><I><B>A_100_Starting_And_Stopping_JXTA</B></I></FONT><FONT COLOR="#000000">);</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT COLOR="#000000"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2>	}</FONT></FONT></FONT></P>
-<P  ALIGN=LEFT STYLE="margin-bottom: 0cm"><FONT COLOR="#000000"><FONT FACE="Consolas, sans-serif"><FONT SIZE=2>}</FONT></FONT></FONT></P>
-<P  STYLE="margin-bottom: 0cm">
-</P>
-</code>
+<java class="java">package</java> org.jxse.test;
+<br><java class="java">import</java> net.jxse.practical.jxta.AbstractPJ2Component;
+<br>
+<java class="java">public class </java>Component <java class="java">extends</java> AbstractPJ2Component{
+<br>
+<java class="java">  public</java> Component(){
+<java class="java">    super</java>( Examples.<FONT COLOR="#0000c0"><I><B>A_100_Starting_And_Stopping_JXTA </B></I></FONT><FONT COLOR="#000000">);</FONT>
+  }
+}
+
+</pre>
 
 <H1 >A little background information</H1>
-<P  STYLE="margin-bottom: 0cm">As was mentioned
-earlier, the <FONT FACE="Courier New, monospace">JXSE-OSGI</FONT>
+<P>As was mentioned earlier, the <FONT FACE="Courier New, monospace">JXSE-OSGI</FONT>
 bundles form a wrapper around the JXSE code. The wrappers are mainly
 intended to break the dependencies with third party libraries, such
 as Jetty and Netty, so that the regular Eclipse replacements can be
@@ -311,7 +259,6 @@ governed by the Apache License, version 2.0, and must be committed to the
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
+    <script src="javascripts/scale.fix.js"></script>  
   </body>
 </html>

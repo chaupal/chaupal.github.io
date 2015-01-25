@@ -1,0 +1,14 @@
+.code{
+  font:Consolas, sans-serif;
+  font-size: 100%;
+}
+
+.xml-code{
+  font:Courier New, monospace;
+  font-size: 11 pt;
+}
+.java{
+  color:#7f0055;
+  font-weight:bold;
+  font-size:110%;
+}
