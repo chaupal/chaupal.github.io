@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Chaupal Organisation</title>
+
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Setting up a simple JXSE Bundle Project</h1>
+      </header>
+      <section>
+<p>The <a href="http://chaupal.github.io/wiki/jxse-osgi.html">previous tutorial</a> demonstrated how to set up JXSE 
+in an OSGI environment, and how to run the examples from <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical JXTA II</a>.
+This tutorial will expand on this basis, and show how to adapt an existing JXTA/JXSE project in an OSGI container.</p>
+<p> The tutorial assumes that you have a good understanding of OSGI and Eclipse. If you need to freshen up on this, you can follow the excellent tutorial
+on OSGI by <a href="http://www.vogella.com/tutorials/OSGi/article.html">Lars Vogel</a>.</p>
+
+<h2> Preparation</h2>
+<P> In this tutorial we will be doing the folling:</p>
+<ul>
+	<li>Setting up the Eclipse IDE to run JXSE</li>
+	<li>Creating an JXSE bundle project</li> 
+	<li>Including JXSE source code to the project</li>
+</ul>
+
+<p>Step one and two were already covered in the <a href="http://chaupal.github.io/wiki/jxse-osgi.html">previous tutorial</a>. We will be using the
+<a href="https://chaupal.github.io/releases/2.8.0/milestone/20150224/alpha/jxse-osgi/site.xml">alpha release version 20150224</a> and up, 
+so you will select this update site in your target definition.</p>
+<p>We now have a running JXSE OSGI bundle, which runs an example from <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical JXTA II</a>.</
+When you reach the section <i>Creating an OSGI Bundle Project</i> is a bit more simpler</p> 
+<p>Now we need to include the sources of your existing JXTA code to the project. These van be copied and pasted in the <code>src</code> folder, in a
+package of your choosing, e.g. <code>org.jxse.test.core</code></p>
+<p>If you have studied the <code>Activator</code> from the previous tutorial, you will see that this object derives from
+<code>net.jxse.osgi.platform.activator.PlatformJxseBuilder</code>, which expects an object that implements the  <code>net.jxse.osgi.compat.IJP2PCompatibility</code>
+interface.<p>
+<p> In fact, all the examples from <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical JXTA II</a> are modified to implement this.
+for instance, <code>_100_Starting_And_Stopping_JXTA_Example</code> is modified as follows:</p>
+
+<pre class="code">
+<java class="java">package</java> Examples.A_JXTA_Connection_And_Local_Configuration;
+
+<java class="java">import</java> Examples.Z_Tools_And_Others.Tools;
+
+<java class="java">import</java> java.io.File;
+<java class="java">import</java> java.io.IOException;
+
+<java class="java">import</java> net.jxse.osgi.compat.AbstractJP2PCompatibility;
+<java class="java">import</java> net.jxse.osgi.compat.IJxtaNode;
+<java class="java">import</java> net.jxta.exception.JxtaException;
+<java class="java">import</java> net.jxta.exception.PeerGroupException;
+<java class="java">import</java> net.jxta.peergroup.PeerGroup;
+<java class="java">import</java> net.jxta.platform.JxtaApplication;
+<java class="java">import</java> net.jxta.platform.NetworkManager;
+
+<java class="java">public class</java> _100_Starting_And_Stopping_JXTA_Example extends AbstractJP2PCompatibility{
+    
+  <java class="java">public static final</java> String Name = "Example 100";
+
+    <java class="java">public</java> _100_Starting_And_Stopping_JXTA_Example() {
+	<java class="java">super</java>( Name );
+    }
+
+    <java class="java">public void</java> main(String[] args){      
+        <java class="java">try</java> {
+            // Creation of the network manager
+            File file = new File("C://Jxta/" + Name);
+            if( !file.exists())
+            	file.mkdirs();
+        	NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE, Name, file.toURI() );
+            MyNetworkManager.getConfigurator().setPrincipal( Name );
+            MyNetworkManager.getConfigurator().setAuthenticationType(Name);
+            <b>IJxtaNode root = super.createRoot( MyNetworkManager );</b>
+            
+            // Starting JXTA
+            Tools.PopInformationMessage(Name, "Starting JXTA network");
+            PeerGroup ConnectedVia = MyNetworkManager.startNetwork();
+            <b>root.addChild( ConnectedVia )</b>;
+            
+            // Diplaying peer group information
+            Tools.PopInformationMessage(Name, "Connected via Peer Group: " + ConnectedVia.getPeerGroupName());
+            
+            // Stopping JXTA
+            Tools.PopInformationMessage(Name, "Stopping JXTA network");
+            MyNetworkManager.stopNetwork();     
+        } <java class="java">catch</java> (IOException ex) {         
+            // Raised when access to local file and directories caused an error
+            Tools.PopErrorMessage(Name, ex.toString());
+            ex.printStackTrace();        
+        } <java class="java">catch</java> (PeerGroupException ex) {        
+            // Raised when the net peer group could not be created
+            Tools.PopErrorMessage(Name, ex.toString());
+            ex.printStackTrace();                   
+        } <java class="java">catch</java> (JxtaException ex) {
+          ex.printStackTrace();
+        }
+    }
+    
+    @Override
+    <java class="java">public void</java> deactivate() {
+      NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+      MyNetworkManager.stopNetwork();
+    }    
+}
+</pre>
+
+<p>As you can see, the interface requires a 'main' method, which imitates the most likely way an JXTA application is configured. If you are currently running a
+JXTA application from the main method, you should be able to adapt your code without much ado. There are two additions to the code, which are
+displayed in boldface, which wil prepare you bundle for the Chaupal tooling. Basically these lines of code register
+typical JXTA objects like the <code>NetworkManager</code> and <code>PeerGroups</code> in Chaupal, so that the system knows where to find them.<br>
+A descriptive <code>name</code> also has to be provided in the constructor</p>
+<p>As you can see, the OSGI bundle activator provides a <code>deactivate</code> method, in which we specifically call the 
+<code>MyNetworkManager.stopNetwork()</code> method. In fact, this is the preferred way to stop the network mananger, even though this 
+is also done in the <code>main</code> method in the above example for purposes of compatibility with the exercises in the book.<br>
+In your code, you should typically start (and register) the network manager in the <code>main</code> method, and stop the network when the 
+OSGI bundle is deactivated.</p>   
+<p>If you adapt your <code>main</code> function as above, and register the object with the <code>Activator</code>, you should be able to run your code!</p>
+
+<h2>Console Commands</h2>
+<p>One major difference with a 'regular' JXTA project, is that the OSGI bundles load the JXTA Modules through a module manager, which uses
+OSGI declarative services. If a certain module is not present, you will therefore get an exception and your bundle may not start.<br>
+This may be typical when a bundle, say <code>net.jxse.jetty</code> or <code>net.jxse.netty</code> is not started. You can check this with the <code>SS</code> 
+command in the OSGI console.<br>
+However, you can also enter the command <code>'jxse'</code>, which will list all the JXSE builders, and the modules they can build in OSGI.</p>
+<p>By default, all the modules that are shipped with a JXTA distribution should be available, but in Chaupal a more fine-grained control
+over the various modules will be present </p>
+
+<h3>Licensing...</h3>
+<p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
+
+<p><a href="https://github.com/chaupal/jxse">JXSE</a> is still governed by
+<a href="jxta-license.txt">the JXTA license</a>,
+which cannot be changed. New code by Chaupal that extends/modifies JXSE is
+governed by the Apache License, version 2.0, and must be committed to the 
+<a href="https://github.com/chaupal/jp2p">JP2P</a> GitHub repository.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>  
+  </body>
+</html>

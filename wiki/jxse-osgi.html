@@ -58,7 +58,7 @@ Start with an empty definition and select a name of your choosing ,</P>
        <P>Select the Eclipse Platform</P>
   </td>
   <td>
-    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A>
+    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150224/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A>
     <P>Select the bundles</P>
   </td>  
 </tr>
@@ -69,71 +69,58 @@ Start with an empty definition and select a name of your choosing ,</P>
 
 <P>Then set the target definition.</P>
 <H1 >Creating an OSGI Bundle Project</H1>
-<P >Now we have the target set up, we can create a bundle project. This is
+<p>Now we have the target set up, we can create a bundle project. This is
 done in the regular fashion. Let's call the project <FONT FACE="Courier New, monospace">org.jxse.test</FONT><FONT FACE="Times New Roman, serif">.
- Next create a Declarative Service component in </FONT><FONT FACE="Courier New, monospace">OSGI-INF/jxta.xml</FONT><FONT FACE="Times New Roman, serif">
-with the following code:</FONT></P>
-
-<pre class="xml-code">
-&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;scr:component name=&quot;org.jxse.test&quot; immediate=&quot;true&quot;
-       deactivate=&quot;deactivate&quot; activate=&quot;activate&quot;
-       xmlns:scr=&quot;<A HREF="http://www.osgi.org/xmlns/scr/v1.1.0">http://www.osgi.org/xmlns/scr/v1.1.0</A>&quot;&gt;<BR>
-  &lt;implementation class=&quot;org.jxse.test.Component&quot;/&gt;
-  &lt;reference name=&quot;org.jxse.test.ModuleBuilder&quot;             
-           unbind=&quot;unregisterBuilder&quot; policy=&quot;dynamic&quot; 
-           interface=&quot;net.jxta.module.IModuleBuilder&quot;
-           cardinality=&quot;0..n&quot; bind=&quot;registerBuilder&quot;/&gt;
-&lt;/scr:component&gt;
-</pre>
-
-<p>Then include the following class:></p>
+We will add an Activator class in the Wizard, and allow the wizard to create one.</p>
+<p>After this is completed, open the Activator class and modify it as follows:</p>
 
 <pre class="code">
   <java class="java">package</java> org.jxse.test;<br>
-  <java class="java">import</java> net.jxta.exception.ConfiguratorException;
-  <java class="java">import</java> net.osgi.jxse.AbstractJxseComponent;
-  <java class="java">import</java> Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;<br>
-  <java class="java">public class </java>Component <java class="java">extends </java>AbstractJxseComponent{
-  <br>   @Override
-  <java class="java"> protected void</java> onRunJxse() {
-  <java class="java">   try</java>
-          _100_Starting_And_Stopping_JXTA_Example.<I>main (</I><java class="java"> null</java> )
-      }
-  <java class="java">   catch</java>( ConfiguratorException e ){
-        e.printStackTrace();
-      }
-   }
+  <java class="java">import</java> net.jxse.practical.jxta.PJ2Examples.Examples;
+  <java class="java">import</java> net.jxse.practical.jxta.PracticalJxta2Builder;
+  <br>
+  <java class="java">import</java> org.osgi.framework.BundleActivator;
+  <java class="java">import</java> org.osgi.framework.BundleContext;
+  <br>
+  <java class="java">public class </java>Activator <java class="java">extends </java>PracticalJxta2Builder <java class="java">implements</java> BundleActivator{
+  <br>
+  <java class="java">public static final</java> String S_BUNDLE_ID = "org.jxse.test";
+  <java class="java">private static</java> BundleContext context;	
+  <br>	
+  <java class="java">  public</java> Activator() {
+  <java class="java"> 	 super</java>( S_BUNDLE_ID, Examples.A_100_Starting_And_Stopping_JXTA);
+    }
+
+  <java class="java">  static</java> BundleContext getContext() {
+  <java class="java">	 return</java> context;
+    }
+
+    @Override
+  <java class="java">	public void</java> start(BundleContext bundleContext) <java class="java"> throws </java>Exception {
+	  context = bundleContext;
+	  <java class="java">super</java>.start(bundleContext);
+    }
+
+    @Override
+  <java class="java">	public void </java>stop(BundleContext bundleContext)<java class="java"> throws </java>Exception {
+  <java class="java">	  super.</java>stop(bundleContext);
+	  context = null;
+    }
+}
 </pre>
 <p>Next we have to create a launch configuration for an OSGI framework.
-Include the bundle we just made, and add the required bundles. Don't
-forget to add:</P>
+Include the bundle we just made, and add the required bundles. Clear all the bundles from the <i>Target Platform</i>, then
+<i>'Add the required bundles'</i> Don't forget to include:</p>
 <UL>
 	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.console</FONT></P>
 	<LI><P>the	three <FONT FACE="Courier New, monospace">org.apache.felix.gogo</FONT><FONT FACE="Times New Roman, serif">
 	bundles</FONT></P>
 	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.ds</FONT></P>
 </UL>
-
-<P>When you run the code you will find that you are running one of the
+<p><i>Validate</i> the bundles and ensure that all the dependnecies have been met.</p>
+<p>When you run the code you will find that you are running one of the
 examples from J&eacute;r&ocirc;me Verstrynge's book, <A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
-JXTA II</A>. These examples are shipped as one of the bundles in the
-set. If you simply want to run these, the following code will suffice
-as well:</P>
-
-<pre class="code">
-
-<java class="java">package</java> org.jxse.test;
-<br><java class="java">import</java> net.jxse.practical.jxta.AbstractPJ2Component;
-<br>
-<java class="java">public class </java>Component <java class="java">extends</java> AbstractPJ2Component{
-<br>
-<java class="java">  public</java> Component(){
-<java class="java">    super</java>( Examples.<FONT COLOR="#0000c0"><I><B>A_100_Starting_And_Stopping_JXTA </B></I></FONT><FONT COLOR="#000000">);</FONT>
-  }
-}
-
-</pre>
+JXTA II</A>. These examples are shipped as one of the bundles</p> 
 
 <H1 >A little background information</H1>
 <P>As was mentioned earlier, the <FONT FACE="Courier New, monospace">JXSE-OSGI</FONT>
@@ -245,6 +232,7 @@ following:</SPAN></P>
 		</TD>
 	</TR>
 </TABLE>
+<p>In the <a href="http://chaupal.github.io/wiki/jxse-osgi2.html">next</a> tutorial you will see how to get an existing JXTA project running in OSGI</p>
 
 <h3>Licensing...</h3>
 <p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
