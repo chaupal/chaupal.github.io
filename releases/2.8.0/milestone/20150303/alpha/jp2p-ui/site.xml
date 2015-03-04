@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Chaupal UI Tools for Eclipse" url="https://chaupal.github.io/releases/2.8.0/milestone/20150303/alpha/jp2p-ui/site.xml">
+      Chaupal UI tools provide wizards and other useful tools to assist in JP2P development
+   </description>
+   <feature url="features/org.chaupal.jp2p.ui.feature_1.0.0.201503041220.jar" id="org.chaupal.jp2p.ui.feature" version="1.0.0.201503041220">
+      <category name="org.chaupal.ui.tools"/>
+   </feature>
+   <category-def name="org.chaupal.ui.tools" label="Chaupal Tools">
+      <description>
+         The category lists the supportt ools for Chaupal
+      </description>
+   </category-def>
+</site>
