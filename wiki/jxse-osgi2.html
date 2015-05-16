@@ -1,0 +1,270 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Chaupal Organisation</title>
+
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>The Adding an existing JXTA application to OSGI</h1>
+      </header>
+      <section>
+<p>The <a href="jxse-osgi.html">previous WIKI contribution</a> demonstrated how you can set up <a href="http://en.wikipedia.org/wiki/JXTA">JXTA</a> 
+for OSGI, and how to get the examples from <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical JXTA II</a> up and running.</p>
+<p>In this section we will show how to get an existing JXTA application to run in OSGI. This tutorial assumes
+that your workspace is set up according to the directions of the <a href="jxse-osgi.html">previous tutorial</a>. It is also assumed that existing JAVA
+code needs to be ported in an OSGI bundle in the Eclipse workspace.</p>
+  
+<h2>Setting up</h2>
+<p>This tutorial comprises of the following steps:</p>
+<ul>
+	<li>Creating a new OSGI bundle in the workspace</li>
+	<li>Copy the JAVA source code in the <code>src</code> directory of the bundle (and refreshing)</li>
+	<li>Change the JAVA <code>main</code> code to </li> 
+	<li> Select  <font FACE="Courier New, monospace">
+	new &rarr; other&rarr; general &rarr; project <font FACE="Times New Roman, serif">and
+	press 'OK'</font></font></LI>
+</UL>
+
+<p>The first step consists of making a new bundle project, like the one we made <a href="jxse-osgi.html">previously</a>.
+In essence this is a regular OSGI bundle, with a declarative service component defined in the <code>OSGI-INF</code> folder in a
+file called <code>module.xml</code></p>
+<p>Experienced OSGI bundle developers may wonder why the JAVA source code could not be simply added to the project,
+and started from the activator. Well, in essence this is exactly what is done, but the OSGI bundle accesses the JXTA Modules
+through the declarative service mechanism, and so the system needs to know when these modules are available.</p>
+<p>Besides this, JXTA tends to take a lot of time to start up, so it would not be a good thing to do this in the <code>start</code> method
+of the bundle activator; there is a good chance that the bundle may time out. This is why JXTA is started in 
+a separate thread.<p>
+   
+project is created in the workspace, in which we next define a target
+definition</P>
+<P>(new &rarr; target definition)
+Start with an empty definition and select a name of your choosing ,</P>
+<P>Next add two update sites:</P>
+<table>
+<tr>
+  <td>
+    <p>The Luna update site</p>
+     <P>Select the Eclipse Platform</P>
+   </td>
+   <td>
+     <A HREF="http://download.eclipse.org/eclipse/updates/4.4">http://download.eclipse.org/eclipse/updates/4.4</A>
+   </td>
+</tr>
+<tr>
+  <td> <P>The JXSE-OSGI bundles:</P>
+       <P>Select the Eclipse Platform</P>
+  </td>
+  <td>
+    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A>
+    <P>Select the bundles</P>
+  </td>  
+</tr>
+</table>
+
+<P>(the latest releases can be found here: 
+<A HREF="https://chaupal.github.io/releases.html">https://chaupal.github.io/releases.html</A>)</P>
+
+<P>Then set the target definition.</P>
+<H1 >Creating an OSGI Bundle Project</H1>
+<P >Now we have the target set up, we can create a bundle project. This is
+done in the regular fashion. Let's call the project <FONT FACE="Courier New, monospace">org.jxse.test</FONT><FONT FACE="Times New Roman, serif">.
+ Next create a Declarative Service component in </FONT><FONT FACE="Courier New, monospace">OSGI-INF/jxta.xml</FONT><FONT FACE="Times New Roman, serif">
+with the following code:</FONT></P>
+
+<pre class="xml-code">
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;scr:component name=&quot;org.jxse.test&quot; immediate=&quot;true&quot;
+       deactivate=&quot;deactivate&quot; activate=&quot;activate&quot;
+       xmlns:scr=&quot;<A HREF="http://www.osgi.org/xmlns/scr/v1.1.0">http://www.osgi.org/xmlns/scr/v1.1.0</A>&quot;&gt;<BR>
+  &lt;implementation class=&quot;org.jxse.test.Component&quot;/&gt;
+  &lt;reference name=&quot;org.jxse.test.ModuleBuilder&quot;             
+           unbind=&quot;unregisterBuilder&quot; policy=&quot;dynamic&quot; 
+           interface=&quot;net.jxta.module.IModuleBuilder&quot;
+           cardinality=&quot;0..n&quot; bind=&quot;registerBuilder&quot;/&gt;
+&lt;/scr:component&gt;
+</pre>
+
+<p>Then include the following class:></p>
+
+<pre class="code">
+  <java class="java">package</java> org.jxse.test;<br>
+  <java class="java">import</java> net.jxta.exception.ConfiguratorException;
+  <java class="java">import</java> net.osgi.jxse.AbstractJxseComponent;
+  <java class="java">import</java> Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;<br>
+  <java class="java">public class </java>Component <java class="java">extends </java>AbstractJxseComponent{
+  <br>   @Override
+  <java class="java"> protected void</java> onRunJxse() {
+  <java class="java">   try</java>
+          _100_Starting_And_Stopping_JXTA_Example.<I>main (</I><java class="java"> null</java> )
+      }
+  <java class="java">   catch</java>( ConfiguratorException e ){
+        e.printStackTrace();
+      }
+   }
+</pre>
+<p>Next we have to create a launch configuration for an OSGI framework.
+Include the bundle we just made, and add the required bundles. Don't
+forget to add:</P>
+<UL>
+	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.console</FONT></P>
+	<LI><P>the	three <FONT FACE="Courier New, monospace">org.apache.felix.gogo</FONT><FONT FACE="Times New Roman, serif">
+	bundles</FONT></P>
+	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.ds</FONT></P>
+</UL>
+
+<P>When you run the code you will find that you are running one of the
+examples from J&eacute;r&ocirc;me Verstrynge's book, <A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
+JXTA II</A>. These examples are shipped as one of the bundles in the
+set. If you simply want to run these, the following code will suffice
+as well:</P>
+
+<pre class="code">
+
+<java class="java">package</java> org.jxse.test;
+<br><java class="java">import</java> net.jxse.practical.jxta.AbstractPJ2Component;
+<br>
+<java class="java">public class </java>Component <java class="java">extends</java> AbstractPJ2Component{
+<br>
+<java class="java">  public</java> Component(){
+<java class="java">    super</java>( Examples.<FONT COLOR="#0000c0"><I><B>A_100_Starting_And_Stopping_JXTA </B></I></FONT><FONT COLOR="#000000">);</FONT>
+  }
+}
+
+</pre>
+
+<H1 >A little background information</H1>
+<P>As was mentioned earlier, the <FONT FACE="Courier New, monospace">JXSE-OSGI</FONT>
+bundles form a wrapper around the JXSE code. The wrappers are mainly
+intended to break the dependencies with third party libraries, such
+as Jetty and Netty, so that the regular Eclipse replacements can be
+used instead. However, the JXSE code is also divided over two
+bundles, separating the code related to configuration (<I>platform</I><SPAN STYLE="font-style: normal">)
+from the core functionality. The complete set of bundles are the
+following:</SPAN></P>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=77*>
+	<COL WIDTH=50*>
+	<COL WIDTH=129*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.osgi</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Core JXSE 
+			</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.osgi.platform</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >configuration</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P >e.g. NetworkManager, NetworkConfigurator</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.netty</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Netty transport bundle</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.jetty</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Jetty Servlet Http</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.derby</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Derby database support</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.h2</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >H2 database support</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >org.spongycastle.fragment</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Spongycastle support</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P ><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=30%>
+			<P >net.jxse.pracxtical.jxta</P>
+		</TD>
+		<TD WIDTH=20%>
+			<P >Practical JXTA II</P>
+		</TD>
+		<TD WIDTH=50%>
+			<P >See:
+			<A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">http://freecomputerbooks.com/Practical-JXTA-II.html</A></P>
+		</TD>
+	</TR>
+</TABLE>
+
+<h3>Licensing...</h3>
+<p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
+
+<p><a href="https://github.com/chaupal/jxse">JXSE</a> is still governed by
+<a href="jxta-license.txt">the JXTA license</a>,
+which cannot be changed. New code by Chaupal that extends/modifies JXSE is
+governed by the Apache License, version 2.0, and must be committed to the 
+<a href="https://github.com/chaupal/jp2p">JP2P</a> GitHub repository.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>  
+  </body>
+</html>
