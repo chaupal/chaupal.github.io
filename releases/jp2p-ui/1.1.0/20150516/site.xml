@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Core JP2P Bundles" url="https://chaupal.github.io/releases/2.8.0/milestone/20150303/alpha/jp2p/site.xml">
+      This site contains the core JP2P bundles and a compatibility
+bundle for existing JXTA applications
+   </description>
+   <feature url="features/org.chaupal.jp2p.ui.feature_1.1.0.201505240654.jar" id="org.chaupal.jp2p.ui.feature" version="1.1.0.201505240654">
+      <category name="Chaupal"/>
+   </feature>
+   <category-def name="Chaupal" label="Chaupal JP2P">
+      <description>
+         Chaupal JP2P is an OSGI Framework for P2P
+      </description>
+   </category-def>
+</site>
