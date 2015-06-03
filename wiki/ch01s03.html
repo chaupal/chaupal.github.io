@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Chaupal Organisation</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body><br>
+    <br>
+    <div class="wrapper">
+      <header>
+        <h1>The JP2P Container</h1>
+        <p>A Simple Chaupal Project</p>
+      </header>
+      <section><br>
+        <h2>Creating a Simple Chaupal Project</h2>
+        So far we have created an RCP project with the Chaupal JP2P project. Now
+        we add a new plugin project in the same fashion as we did earlier:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; File -&gt; New -&gt; Plugin
+        Project<br>
+        <br>
+        When the wizard opens, we select an '<em>OSGI Framework</em>' project
+        and follow the guidelines of the wizard until certain templates can be
+        selected. Give the bundle a name, such as:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; org.&lt;your
+        organisation&gt;.rdv<br>
+        <br>
+        where you fill in the organisation of your choosing.<br>
+        In the list you can see two JXSE bundle options. Select the RDV option
+        and press 'finish'. <br>
+        We now have two bundles in our workspace. Time to see what this may
+        achieve!<br>
+        <br>
+        In order to see the differences, we first need to make a few changes to
+        the&nbsp; standard launch configuration. Open the launcher:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Run -&gt; Debug
+        Configurations<br>
+        <br>
+        and select the 'Plugins' tab. Here you see a list of all the bundles
+        that are activated when you run your application. By default, all the
+        plugins and features are activated. For now, we respect this option, but
+        we change the <em>launch with</em> option to run with the 'bundles
+        selected below'. Then we set the 'auto-start' option of the new bundle
+        to 'true'.&nbsp; Next we have to set the auto-start option to
+        'true''&nbsp; for:<br>
+        <br>
+        <ul>
+          <li>net.jxse.jetty</li>
+          <li>net.jxse.netty</li>
+          <li>net.jxse.osgi.platform</li>
+        </ul>
+        Include the following bundles to activate the console:<br>
+        <br>
+        <ul>
+          <li>org.eclipse.equinox.console</li>
+          <li>org.apache.felix.gogo.command</li>
+          <li>org.apache.felix.gogo.runtime</li>
+        </ul>
+        <br>
+        We 'apply' the changes and run the launcher, but when the IDE opens,
+        nothing has changed!<br>
+        <br>
+        We need to make one modification in the Activator class that was
+        generated when the new bundle was created. Change the constructor as
+        follows:<br>
+        <code> </code><br>
+        <pre class="code"><java class="java">public </java>Activator(){
+ <span style="color: #7f0055;"> </span><java class="java">super</java>( S_PLUGIN_ID, DeveloperModes.DEBUG ) {
+}
+</pre> Last, we have to make some changes to the launch configuration we use to
+        start the application. Open the launch configuration (run -&gt; Debug
+        (or Run) Configurations -&gt; <br>
+        <br>
+        Eclipse makes a difference between the development environment and the
+        target environment. The development environment can contain a lot of
+        functionality like support for GIT, web development and database support
+        that the applications you want to develop do not need. The <em>target
+          environment </em>therefore usually contains a smaller and different
+        set of functionality that the IDE requires. However, initially the
+        target and development environment are configured to be the same.<br>
+        <p> </p>
+      </section>
+      <footer>
+        <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>
