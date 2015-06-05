@@ -3,10 +3,10 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>The Chaupal Container Builder</title>
-    <link rel="stylesheet" href="../../stylesheets/styles.css">
-    <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
-    <link rel="stylesheet" href="../../stylesheets/codeblock.css">
+    <title>Chaupal JP2P Components</title>
+    <link rel="stylesheet" href="../../../stylesheets/styles.css">
+    <link rel="stylesheet" href="../../../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../../../stylesheets/codeblock.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   </head>
@@ -18,71 +18,85 @@
             <th colspan="3" align="center">1. Architecture</th>
           </tr>
           <tr>
-            <td align="left" width="20%"><a accesskey="p" href="ch01s01.html">Prev</a>&nbsp;</td>
+            <td align="left" width="20%"><a accesskey="p" href="arch02.html">Prev</a>&nbsp;</td>
             <th align="center" width="60%">&nbsp;</th>
-            <td align="right" width="20%"><br>
-            </td>
+            <td align="right" width="20%"><a accesskey="p" href="arch04.html">Next</a>&nbsp;</td>
           </tr>
         </tbody>
       </table>
       <header>
-        <h1>The Chaupal Container Builder</h1>
+        <h1>The Chaupal<br>
+          JP2P Architecture</h1>
       </header>
       <section>
         <div class="chapter" lang="en">
           <div class="titlepage">
             <div>
               <div>
-                <h2><a name="introduction"></a>The Chaupal JP2P Container
-                  Builder</h2>
+                <h2>1.3 Chaupal JP2P Component Builder</h2>
               </div>
             </div>
           </div>
-          It may seem&nbsp; from the previous that the JP2P container is a very
-          complicated bit of code, like the J2EE containers, but actually the
-          container is very simple; it is little more than a collection of JP2P
-          <em>components,</em> which implement the net.jp2p.IJp2pComponent
-          interface. In fact, the container itself implements this
-          interface,&nbsp; JP2P components come in three flavours:<br>
-          <ol>
-            <li>Component: the simplest instance, which is basically a wrapper
-              around a POJO</li>
-            <li>ComponentNode: as above, but which can have child nodes</li>
-            <li>JP2P Service: a stateful node that can be started, stopped and
-              paused.</li>
-          </ol>
-          <p>Take for instance a Component node that wraps the NetworkManager of
-            JXTA<sup>TM</sup>.You may be tempted to think that this is
-            implemented as a JP2P service-because in JXTA<sup>TM</sup> we use
-            the Network Manager to start and stop the network, but it actually
-            is divided over three distinct JP2P components:</p>
+          As was mentioned earlier., the Chaupal JP2P container is little more
+          than a placeholder for JP2P components. The real work is done by the <em>Cnet.jp2p.chaupal.activator.Jp2pBundleActivator</em>,
+          which parses the jp2p-1.0.0.xml file, and checks if the resources are
+          available to build the container. In order to do so, a number of JP2P
+          core bundles register a number of <em>builders</em> that provide <em>factories
+            </em>for the a dedicated JP2P component.:These builders together
+          provide a <em>context</em> that provides the functionality that the
+          container can access:<br>
+          <br>
+          net.jp2p.chaupal&nbsp; (net.jp2p.chaupal.context.Jp2pServiceBuilder):<br>
           <ul>
-            <li> The NetworkManager component <em>node</em></li>
-            <li>The NetworkConfigurator child node</li>
-            <li>The Netpeergroup <em>service</em>, which actually starts and
-              stops the network</li>
+            <li>StartupService</li>
+            <li>SequencerService</li>
+            <li>SimplePersistence</li>
+            <li>Logger </li>
           </ul>
-          <p>When you start the RDV template project, you will see these
-            services appear in the JP2P navigator. </p>
-          <p>As a result, the JP2P container is therefore not a linear
-            transformation of JXTA<sup>TM</sup> functionality, but in general it
-            should not be too difficult to see the relationship between them. </p>
-        </div>
+          net.jp2p.chaupal.jxta&nbsp;
+          (net.jp2p.chaupal.jxta.context.Jp2pJxtaBuilder):<br>
+          <ul>
+            <li>NetPeerGroupService</li>
+            <li>PipeService</li>
+            <li>RegistrationService</li>
+            <li>DiscoveryService</li>
+            <li>PeerGroupService</li>
+            <li>AdvertisementService</li>
+            <li>Socket</li>
+            <li>Rendezvous</li>
+          </ul>
+          net.jp2p.chaupal.jxta.platform&nbsp;
+          (net.jp2p.chaupal.jxta.platform.context.JxtaPlatformBuilder):<br>
+          <ul>
+            <li>NetworkManager</li>
+            <li>NetworkConfigurator</li>
+            <li>Security</li>
+            <li>Tcp</li>
+            <li>Http</li>
+            <li>Http2</li>
+            <li>Multicast</li>
+            <li>Infrastructure</li>
+            <li>SeedList<br>
+            </li>
+          </ul>
+          When you are running a Chaupal project with the OSGI console, you can
+          see which of the builders are active by typing 'jp2p' in the OSGI
+          console.</div>
       </section>
       <table summary="Navigation footer" width="100%">
         <tbody>
           <tr>
-            <td align="left" width="40%"><br>
+            <td align="left" width="40%">&nbsp;<a accesskey="n" href="arch02.html">Prev</a><br>
             </td>
             <td align="center" width="20%"><br>
             </td>
-            <td align="right" width="40%">&nbsp;<a accesskey="n" href="ch01s02.html">Next</a></td>
+            <td align="right" width="40%">&nbsp;<a accesskey="n" href="arch04.html">Next</a></td>
           </tr>
           <tr>
             <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
-            <td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td>
-            <td align="right" valign="top" width="40%">&nbsp;1.2 Setting up the
-              Eclipse IDE and Chaupal Tools</td>
+            <td align="center" width="20%"><a accesskey="h" href="chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
+            <td align="right" valign="top" width="40%">&nbsp;1.4 The Chaupal JP2P
+              factories</td>
           </tr>
         </tbody>
       </table>

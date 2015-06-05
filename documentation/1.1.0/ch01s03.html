@@ -3,7 +3,7 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>The Chaupal Organisation</title>
+    <title>The Anatomy of a Chaupal JP2P Project Bundle</title>
     <link rel="stylesheet" href="../../stylesheets/styles.css">
     <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="../../stylesheets/codeblock.css">
@@ -18,9 +18,9 @@
             <th colspan="3" align="center">1.&nbsp;Introduction</th>
           </tr>
           <tr>
-            <td align="left" width="20%"><a accesskey="p" href="ch01s01.html">Prev</a>&nbsp;</td>
+            <td align="left" width="20%"><a accesskey="p" href="ch01s02.html">Prev</a>&nbsp;</td>
             <th align="center" width="60%">&nbsp;</th>
-            <td align="right" width="20%">&nbsp;<a accesskey="n" href="ch01s03.html">Next</a></td>
+            <td align="right" width="20%">&nbsp;<a accesskey="n" href="ch01s04.html">Next</a></td>
           </tr>
         </tbody>
       </table>
@@ -43,7 +43,8 @@
           that:<br>
           <br>
           <ul>
-            <li>The Activator derives from Jp2pBundleActivator</li>
+            <li>The Activator derives from
+              net.jp2p.chaupal.activator.Jp2pBundleActivator</li>
             <li>A JP2P-INF folder has been made with a jp2p-1.0.0.xml file in
               it.</li>
           </ul>
@@ -149,11 +150,11 @@
           <ul>
             <li>Create a JP2P container</li>
             <li>'Auto start' it, so that the services are activated when they
-              are parsed succesfully</li>
+              are parsed successfully</li>
             <li>Use a folder called ".jxta/org.chaupal.rdv" in the user section
               of your computer's operating system</li>
-            <li>Persist properties using a service of type 'osgi', which means
-              that the OSGI preferences are used.</li>
+            <li>Persist properties using a service of context 'chaupal', which
+              basically means that the OSGI preferences are used.</li>
           </ul>
           <p>It may be clear that JXTA<sup>TM</sup>s NetworkConfigurator will
             use this location, so it is no longer available there. Instead,
@@ -161,23 +162,23 @@
             NetworkConfigurator use the locations provided by the configuration
             file. The other settings are rather straightforward for JXTA<sup>TM</sup>developers.
             If you are new to JXTA<sup>TM</sup>, you can read the section "Jack
-            the Rendezvous peer" in Jérôme Verstrynge's book. You will see that
-            the JP2P configuration file is a representation of the settings that
-            are coded there.</p>
+            the Rendezvous peer" in <a href="http://www.scribd.com/doc/47538921/Practical-JXTA-II#scribd">Jérôme
+              Verstrynge's book</a>. You will see that the JP2P configuration
+            file is a representation of the settings that are coded there.</p>
         </div>
       </section>
       <table summary="Navigation footer" width="100%">
         <tbody>
           <tr>
-            <td align="left" width="40%"><br>
+            <td align="left" width="40%"><a accesskey="p" href="ch01s02.html">Prev</a>
             </td>
             <td align="center" width="20%"><br>
             </td>
-            <td align="right" width="40%">&nbsp;<a accesskey="n" href="ch01s02.html">Next</a></td>
+            <td align="right" width="40%">&nbsp;<a accesskey="n" href="ch01s04.html">Next</a></td>
           </tr>
           <tr>
             <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
-            <td align="center" width="20%"><a accesskey="h" href="index.html">Home</a></td>
+            <td align="center" width="20%"><a accesskey="h" href="http://chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
             <td align="right" valign="top" width="40%">&nbsp;1.2 Setting up the
               Eclipse IDE and Chaupal Tools</td>
           </tr>

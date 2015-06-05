@@ -3,282 +3,226 @@
   <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>The Chaupal Organisation</title>
-    <link rel="stylesheet" href="../stylesheets/styles.css">
-    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
-    <link rel="stylesheet" href="../stylesheets/codeblock.css">
+    <title>TThe Chaupal JP2P Factories</title>
+    <link rel="stylesheet" href="../../../stylesheets/styles.css">
+    <link rel="stylesheet" href="../../../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../../../stylesheets/codeblock.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   </head>
   <body>
     <div class="wrapper">
+      <table summary="Navigation header" width="100%">
+        <tbody>
+          <tr>
+            <th colspan="3" align="center">1. Architecture</th>
+          </tr>
+          <tr>
+            <td align="left" width="20%"><a accesskey="p" href="arch03.html">Prev</a>&nbsp;</td>
+            <th align="center" width="60%">&nbsp;</th>
+            <td align="right" width="20%"><a accesskey="p" href="arch05.html">Next</a>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
       <header>
-        <h1>The Chaupal Container Builder</h1>
+        <h1>The Chaupal<br>
+          JP2P Architecture</h1>
       </header>
-      <section>
-        <p>As was mentioned earlier., the Chaupal JP2P container is little more
-          than a placeholder for JP2P components. The real work is done by the <em>Cnet.jp2p.chaupal.activator.Jp2pBundleActivator</em>,
-          which parses the jp2p-1.0.0.xml file, and checks if the resources are
-          available to build the container. In order to do so, a number of JP2P
-          core bundles register a number </p>
-        <p><br>
-        </p>
-        <p>parses the The <a href="jxse-osgi.html">previous WIKI contribution</a>
-          demonstrated how you can set up <a href="http://en.wikipedia.org/wiki/JXTA">JXTA</a>
-          for OSGI, and how to get the examples from <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
-            JXTA II</a> up and running.</p>
-        <p>In this section we will show how to get an existing JXTA application
-          to run in OSGI. This tutorial assumes
-          that your workspace is set up according to the directions of the <a href="jxse-osgi.html">previous
-            tutorial</a>. It is also assumed that existing JAVA
-          code needs to be ported in an OSGI bundle in the Eclipse workspace.</p>
-        <h2>Setting up</h2>
-        <p>This tutorial comprises of the following steps:</p>
+      <section class="1.">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2>1.4 The Chaupal JP2P Factories</h2>
+            </div>
+          </div>
+        </div>
+        Every factory is responsible for a single JP2P component. In fact, one
+        could say that the JP2P XML file represents the factories that are
+        needed, rather than the components. When a JP2P project is launched, the
+        builder:<br>
+        <br>
+        <ol>
+          <li>parses the jp2p-1.0.0.xml file globally to see if all the required
+            factories are available</li>
+          <li>parses the file in more detail, in order to fill the factories
+            with the required data</li>
+          <li>completes the builder with factories that are needed by others</li>
+          <li>Runs the factories in order to build the JP2P container. &nbsp; </li>
+        </ol>
+        If a container is not built, it usually means that a builder is not
+        registered as a declarative service. You will see this in the console,
+        through a message that complains that the builder is waiting for a
+        certain factory (e.g: NetworkManagerFactory if the JXTA <sup>TM </sup>platform
+        bundle is not activated). <br>
+        <br>
+        A factory not only creates a corresponding JP2P component, but it
+        actually starts by creating a <em>property source</em>. The property
+        source actually contains the values that are depicted in the XML file,
+        and come in two flavours:<br>
+        <br>
+        <ol>
+          <li>net.jp2p.container.properties.IJp2pDirectives (the XML attributes)</li>
+          <li>net.jp2p.container.properties.IJp2pProperties (XML properties)</li>
+        </ol>
+        &nbsp;Although the distinction between these is not rigid, one could say
+        that, in general, a directive provides information for the factory,
+        while the properties&nbsp; are needed to configure the JP2P component.
+        If we look at the configuration file we made in the previous section:<br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;properties&gt;
+    &lt;home-folder&gt;${user.home}/.jxta/${bundle-id}&lt;/home-folder&gt;
+  &lt;/properties&gt;
+  &lt;persistence-service context="chaupal"/&gt;
+&lt;/jp2p-container&gt;
+</pre>we can see that the builder gets a <em>directive&nbsp; </em>to
+        auto-start the container, and that one of the properties of the container
+        itself is the location of the home folder.<br>
+        <br>
+        <h3><span style="color: black;">1.3.1: The Build Sequence of a JP2P
+            Component Factory</span></h3>
+        When the builder is ready to run a factory, it follows a certain
+        procedure:<br>
+        <br>
+        <ol>
+          <li>It creates the property source and adds it to a tree of property
+            sources</li>
+          <li>it adds property sources that are needed to successfully build a
+            component</li>
+          <li>When the tree of property sources is complete, it starts to build
+            the components</li>
+          <li>Depending on the type and the provided directives, the services
+            are started</li>
+        </ol>
+        <p>The build process of the components does not follow the tree
+          structure of the property sources. Instead, every factory is notified
+          of the various states that other factories are in, and they can
+          proceed when the correct conditions are met. For instance, the <strong>net.jp2p.chaupal.jxta.platform;NetworkManagerFactory
+            </strong>should not start if the <strong>net.jp2p.chaupal.jxta.platform.configurator.NetworkConfiguratorFactory</strong>
+          is not ready. Therefore the construction of the <strong>NetworkManager</strong>
+          component is delayed until all the configuration properties have been
+          set.</p>
+        <p> The builder therefore dispatches a number of <strong>net.jp2p.container.builder.ICompositeBuilderListener.BuilderEvents</strong>
+          to all the factories:</p>
         <ul>
-          <li>Creating a new OSGI bundle in the workspace</li>
-          <li>Copy the JAVA source code in the <code>src</code> directory of
-            the bundle (and refreshing)</li>
-          <li>Change the JAVA <code>main</code> code to </li>
-          <li> Select <font face="Courier New, monospace"> new → other→ general
-              → project <font face="Times New Roman, serif">and press 'OK'</font></font></li>
+          <li>PROPERTY_SOURCE_PREPARED</li>
+          <li>PROPERTY_SOURCE_CREATED</li>
+          <li>COMPONENT_PREPARED</li>
+          <li>COMPONENT_CREATED</li>
+          <li>COMPONENT_STARTED</li>
+          <li>FACTORY_COMPLETED</li>
         </ul>
-        <p>The first step consists of making a new bundle project, like the one
-          we made <a href="jxse-osgi.html">previously</a>.
-          In essence this is a regular OSGI bundle, with a declarative service
-          component defined in the <code>OSGI-INF</code> folder in a
-          file called <code>module.xml</code></p>
-        <p>Experienced OSGI bundle developers may wonder why the JAVA source
-          code could not be simply added to the project,
-          and started from the activator. Well, in essence this is exactly what
-          is done, but the OSGI bundle accesses the JXTA Modules
-          through the declarative service mechanism, and so the system needs to
-          know when these modules are available.</p>
-        <p>Besides this, JXTA tends to take a lot of time to start up, so it
-          would not be a good thing to do this in the <code>start</code> method
-          of the bundle activator; there is a good chance that the bundle may
-          time out. This is why JXTA is started in a separate thread.</p>
-        <p> project is created in the workspace, in which we next define a
-          target
-          definition</p>
-        <p>(new → target definition)
-          Start with an empty definition and select a name of your choosing ,</p>
-        <p>Next add two update sites:</p>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <p>The Luna update site</p>
-                <p>Select the Eclipse Platform</p>
-              </td>
-              <td> <a href="http://download.eclipse.org/eclipse/updates/4.4">http://download.eclipse.org/eclipse/updates/4.4</a>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <p>The JXSE-OSGI bundles:</p>
-                <p>Select the Eclipse Platform</p>
-              </td>
-              <td> <a href="https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</a>
-                <p>Select the bundles</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <p>(the latest releases can be found here: <a href="https://chaupal.github.io/releases.html">https://chaupal.github.io/releases.html</a>)</p>
-        <p>Then set the target definition.</p>
-        <h1>Creating an OSGI Bundle Project</h1>
-        <p>Now we have the target set up, we can create a bundle project. This
-          is
-          done in the regular fashion. Let's call the project <font face="Courier New, monospace">org.jxse.test</font><font
-            face="Times New Roman, serif">. Next create a Declarative Service
-            component in </font><font face="Courier New, monospace">OSGI-INF/jxta.xml</font><font
-            face="Times New Roman, serif">
-            with the following code:</font></p>
-        <pre class="xml-code">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;scr:component name="org.jxse.test" immediate="true"
-       deactivate="deactivate" activate="activate"
-       xmlns:scr="<a href="http://www.osgi.org/xmlns/scr/v1.1.0">http://www.osgi.org/xmlns/scr/v1.1.0</a>"&gt;<br>
-  &lt;implementation class="org.jxse.test.Component"/&gt;
-  &lt;reference name="org.jxse.test.ModuleBuilder"             
-           unbind="unregisterBuilder" policy="dynamic" 
-           interface="net.jxta.module.IModuleBuilder"
-           cardinality="0..n" bind="registerBuilder"/&gt;
-&lt;/scr:component&gt;
-</pre>
-        <p>Then include the following class:&gt;</p>
-        <pre class="code">  <java class="java">package</java> org.jxse.test;<br>
-  <java class="java">import</java> net.jxta.exception.ConfiguratorException;
-  <java class="java">import</java> net.osgi.jxse.AbstractJxseComponent;
-  <java class="java">import</java> Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;<br>
-  <java class="java">public class </java>Component <java class="java">extends </java>AbstractJxseComponent{
-  <br>   @Override
-  <java class="java"> protected void</java> onRunJxse() {
-  <java class="java">   try</java>
-          _100_Starting_And_Stopping_JXTA_Example.<i>main (</i><java class="java"> null</java> )
-      }
-  <java class="java">   catch</java>( ConfiguratorException e ){
-        e.printStackTrace();
-      }
-   }
-</pre>
-        <p>Next we have to create a launch configuration for an OSGI framework.
-          Include the bundle we just made, and add the required bundles. Don't
-          forget to add:</p>
+        There are two types of factories, which implement a corresponding
+        interface:<br>
+        <br>
         <ul>
-          <li>
-            <p><font face="Courier New, monospace">org.eclipse.equinox.console</font></p>
-          </li>
-          <li>
-            <p>the three <font face="Courier New, monospace">org.apache.felix.gogo</font><font
-                face="Times New Roman, serif"> bundles</font></p>
-          </li>
-          <li>
-            <p><font face="Courier New, monospace">org.eclipse.equinox.ds</font></p>
-          </li>
+          <li><strong>net.jp2p.container.factory.IPropertySourceFactory</strong></li>
+          <li><strong>net.jp2p.container.factory.IComponentFactory</strong></li>
         </ul>
-        <p>When you run the code you will find that you are running one of the
-          examples from Jérôme Verstrynge's book, <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
-JXTA
-            II</a>. These examples are shipped as one of the bundles in the
-          set. If you simply want to run these, the following code will suffice
-          as well:</p>
-        <pre class="code">
-<java class="java">package</java> org.jxse.test;
-<br><java class="java">import</java> net.jxse.practical.jxta.AbstractPJ2Component;
-<br>
-<java class="java">public class </java>Component <java class="java">extends</java> AbstractPJ2Component{
-<br>
-<java class="java">  public</java> Component(){
-<java class="java">    super</java>( Examples.<font color="#0000c0"><i><b>A_100_Starting_And_Stopping_JXTA </b></i></font><font
-color="#000000">);</font>
-  }
-}
-
+        Obviously the latter is derived from the former. As may be expected, a
+        propertysource factory does not create a JP2P component, but just
+        properties. The <strong>net.jp2p.container.startup.StartupServiceFactory</strong>
+        is a good example of this type of factory, as it little more than follow
+        the <strong>BuilderEvents</strong>, and start a service if these happen
+        to be created. The <strong>net.jp2p.container.log.LoggerFactory</strong>
+        is another fine example, as it displays information on the build
+        process, and is no longer needed once the container is complete.<br>
+        A special type of propertysource factories have been implemented for <strong>net.jp2p.chaupal.jxta.platform.configurator.NetworkConfiguratorFactory.
+          </strong>If we take a closer look at the jp2p-1.0.0.xml file:<br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  ...
+    &lt;network-configurator&gt;
+       &lt;properties&gt;&lt;/properties&gt;
+       &lt;tcp&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;9715&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;
+       &lt;/tcp&gt;
+       &lt;http&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;8081&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;    
+       &lt;/http&gt;
+       &lt;multicast enabled="true"/&gt;
+    &lt;/network-configurator&gt;
+  ...
+&lt;/jp2p-container&gt;
+</pre> we see that the properties of the NetworkConfigurator have been grouped
+        together in logical units, such as http&nbsp; tcp, multicast and so on.
+        Internally, the&nbsp; <strong>NetworkConfiguratorFactory </strong>is
+        completed by a&nbsp; number of property source factories that complete
+        the platform settings. <br>
+        <br>
+        A property source factory implements the <strong>net.jp2p.container.builder.ICompositeBuilderListener
+        </strong>interface, which contains one method:<br>
+        <br>
+        <strong>public void</strong> notifyChange(
+        ComponentBuilderEvent&lt;T&gt; event );<br>
+        <br>
+        Every factory must override this method in order to determine when a
+        next state of the factory should start.<br>
+        &nbsp;<br>
+        The component factories provide a <strong>getComponent() </strong>method
+        that is used to fill the container. After the build process has
+        completed, only these components are therefore available in the
+        container, as the factories and builders are cleaned up and removed from
+        the VM. <br>
+        <br>
+        A consequences of this approach is that a lot of services can be
+        positioned anywhere in the XML file; <br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;network-manager clear-config="true"&gt;
+    &lt;network-configurator&gt;
+       &lt;tcp&gt;...&lt;/tcp&gt;
+       &lt;http&gt;...&lt;/http&gt;
+       &lt;multicast enabled="true"/&gt;
+    &lt;/network-configurator&gt;
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
 </pre>
-        <h1>A little background information</h1>
-        <p>As was mentioned earlier, the <font face="Courier New, monospace">JXSE-OSGI</font>
-          bundles form a wrapper around the JXSE code. The wrappers are mainly
-          intended to break the dependencies with third party libraries, such
-          as Jetty and Netty, so that the regular Eclipse replacements can be
-          used instead. However, the JXSE code is also divided over two
-          bundles, separating the code related to configuration (<i>platform</i><span
-            style="font-style: normal">)
-            from the core functionality. The complete set of bundles are the
-            following:</span></p>
-        <table border="1" bordercolor="#000000" cellpadding="4" cellspacing="0"
-          width="100%">
-          <colgroup><col width="77*"> <col width="50*"> <col width="129*"> </colgroup>
-          <tbody>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.osgi</p>
-              </td>
-              <td width="20%">
-                <p>Core JXSE </p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.osgi.platform</p>
-              </td>
-              <td width="20%">
-                <p>configuration</p>
-              </td>
-              <td width="50%">
-                <p>e.g. NetworkManager, NetworkConfigurator</p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.netty</p>
-              </td>
-              <td width="20%">
-                <p>Netty transport bundle</p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.jetty</p>
-              </td>
-              <td width="20%">
-                <p>Jetty Servlet Http</p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.derby</p>
-              </td>
-              <td width="20%">
-                <p>Derby database support</p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.h2</p>
-              </td>
-              <td width="20%">
-                <p>H2 database support</p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>org.spongycastle.fragment</p>
-              </td>
-              <td width="20%">
-                <p>Spongycastle support</p>
-              </td>
-              <td width="50%">
-                <p><br>
-                </p>
-              </td>
-            </tr>
-            <tr valign="TOP">
-              <td width="30%">
-                <p>net.jxse.pracxtical.jxta</p>
-              </td>
-              <td width="20%">
-                <p>Practical JXTA II</p>
-              </td>
-              <td width="50%">
-                <p>See: <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">http://freecomputerbooks.com/Practical-JXTA-II.html</a></p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <p>The parent-child structure of the above XML file is more a matter of
+          convention than that the parser requires this; as long as the
+          factories start the creation of JP2P components at the correct moment,
+          the container should be built in the cortrect fashion. The structure <em>does</em>
+          have consequences for the way the components are stored in the
+          container (and displayed in the UI). As a result, a JP2P container
+          tends to be flatter than than the corresponding JXTA<sup>TM</sup>
+          application.</p>
         <h3>Licensing...</h3>
         <p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
         <p><a href="https://github.com/chaupal/jxse">JXSE</a> is still governed
-          by
-          <a href="jxta-license.txt">the JXTA license</a>,
-          which cannot be changed. New code by Chaupal that extends/modifies
-          JXSE is
-          governed by the Apache License, version 2.0, and must be committed to
-          the <a href="https://github.com/chaupal/jp2p">JP2P</a> GitHub
-          repository.</p>
+          by <a href="jxta-license.txt">the JXTA license</a>, which cannot be
+          changed. New code by Chaupal that extends/modifies JXSE is governed by
+          the Apache License, version 2.0, and must be committed to the <a href="https://github.com/chaupal/jp2p">JP2P</a>
+          GitHub repository.</p>
       </section>
-      <footer>
-        <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+      <table summary="Navigation footer" width="100%">
+        <tbody>
+          <tr>
+            <td align="left" width="40%">&nbsp;<a accesskey="n" href="arch03.html">Prev</a><br>
+            </td>
+            <td align="center" width="20%"><br>
+              <br>
+            </td>
+            <td align="right" width="40%">&nbsp;<a accesskey="n" href="arch05.html">Next</a></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
+            <td align="center" width="20%"><a accesskey="h" href="chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
+            <td align="right" valign="top" width="40%">&nbsp;1.5 </td>
+          </tr>
+        </tbody>
+      </table>
+      <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
     </div>
     <script src="javascripts/scale.fix.js"></script>
   </body>
