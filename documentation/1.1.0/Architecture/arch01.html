@@ -15,7 +15,7 @@
       <table summary="Navigation header" width="100%">
         <tbody>
           <tr>
-            <th colspan="3" align="center">1.&nbsp;Introduction</th>
+            <th colspan="3" align="center">2. Architecture</th>
           </tr>
           <tr>
             <td align="left" width="20%"><a accesskey="p" href="chaupal.github.io/documentation/1.1.0/contents.html">Prev</a>&nbsp;</td>
@@ -24,94 +24,106 @@
           </tr>
         </tbody>
       </table>
-      <header>
-        <h1>The Chaupal<br>
-          JP2P Architecture</h1>
-      </header>
-      <section>
-        <div class="chapter" lang="en">
-          <div class="titlepage">
+    <header>
+      <h1>The Chaupal<br>
+        JP2P Architecture</h1>
+    </header>
+    <section>
+      <div class="chapter" lang="en">
+        <div class="titlepage">
+          <div>
             <div>
-              <div>
-                <h2><a name="introduction"></a>1.1. Overview</h2>
-              </div>
+              <h2><a name="introduction"></a>2.1. Overview</h2>
             </div>
           </div>
-          The Chaupal JP2P Architecture aims to provide a generic container
-          structure for JAVA based peer to peer (P2P) applications, and tools to
-          make the development of P2P applications a lot easier. The
-          architecture contains a number of bundles, divided over three (GitHub)
-          projects, that each add a layer of functionality to Java P2P. The
-          bundles that make Chaupal are depicted below<br>
-          <img title="Chaupal Architecture" alt="" src="../../../images/overview.png"><br>
-          <br>
-          At the bottom we see the JXSE 2.8x library, formerly known as JXTA<sup>TM</sup>.
-          The code of this library is divided over a number of bundles that make
-          JXSE-LIB.Although these are OSGI bundles, they have no dependencies
-          with OSGI, so they can be deployed as POJO's., In other words, if you
-          put the bundles in your classpath, you should be able to deploy a JXTA<sup>TM</sup>
-          application, as if you were using the regular JAR. <br>
-          <br>
-          &nbsp;One bundle uses the others: net.jxse.practical.jxta, which
-          implements the code of the corresponding <a href="http://www.scribd.com/doc/47538921/Practical-JXTA-II#scribd">book</a>.
-          With respect to the original code, the 2.8x version of JXTA<sup>TM</sup>
-          makes a functional distinction between:<br>
-          <br>
-          <ul>
-            <li>net.jxta: core functionality</li>
-            <li>net.jxta.platform: configuration code (i.e. NetworkManager and
-              NetworkConfigurator)</li>
-            <li>Third party additions (Jetty, Netty, Derby, etc.)</li>
-          </ul>
-          The level of J<em>P2P Core </em>implements the JP2P container. This
-          is also a bundle which can be used as a POJO. The container is not
-          dependent on JXTA<sup>TM</sup> either. This is handled by the
-          net.jp2p.jxta bundle. Only at the level of the four bundles that
-          complete the JP2P core package, the specific OSGI dependency is made,
-          all of which provide specific services for the JP2P
-          container:net,chaupal: general services:<br>
-          <br>
-          <ul>
-            <li>net.jp2p.jxse.compatibility: a bridge that allows existing JXTA<sup>TM</sup>
-              code to run on the JP2P container</li>
-            <li>net.jp2p.chaupal.jxta: JXTA<sup>TM</sup> services</li>
-            <li>net.jp2p.chaupal.jxta.platofrm: JXTA<sup>TM</sup> platform
-              services. </li>
-          </ul>
-          These four bundles use the OSGI declarative service mechanism to
-          register their services to the JP2P container. If one of these bundles
-          is not available or not started, the corresponding JP2P services are
-          not registered, and cannot be used by the JP2P container.<br>
-          <br>
-          At the top level, there are three bundles that are specific to Eclipse
-          and Equinox, and these provide tools for the Eclipse RC, such as
-          templates, perspectives and, in the particular case of
-          net.jp2p.chaupal.equinox, jp2p services that has dependencies with
-          equinox code. This bundle will therefore not work on Apache Felix or
-          Knopflerfish without additional handwork.<br>
-          &nbsp;<br>
-          <br>
         </div>
-      </section>
-      <table summary="Navigation footer" width="100%">
-        <tbody>
-          <tr>
-            <td align="left" width="40%"><br>
-            </td>
-            <td align="center" width="20%"><br>
-            </td>
-            <td align="right" width="40%">&nbsp;<a accesskey="n" href="arch02.html">Next</a></td>
-          </tr>
-          <tr>
-            <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
-            <td align="center" width="20%"><a accesskey="h" href="chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
-            <td align="right" valign="top" width="40%">&nbsp;1.2 Chaupal JP2P
-              Components</td>
-          </tr>
-        </tbody>
-      </table>
-      <p><small>Hosted on GitHub Pages � Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        The Chaupal JP2P Architecture aims to provide a generic container
+        structure for JAVA based peer to peer (P2P) applications, and tools to
+        make the development of P2P applications a lot easier. The architecture
+        contains a number of bundles, divided over three (GitHub) projects, that
+        each add a layer of functionality to Java P2P. The bundles that make
+        Chaupal are depicted below<br>
+        <img title="Chaupal Architecture" alt="" src="../../../images/overview.png"><br>
+        <br>
+        At the bottom we see the JXSE 2.8x library, formerly known as JXTA<sup>TM</sup>.
+        The code of this library is divided over a number of bundles that make
+        JXSE-LIB.Although these are OSGI bundles, they have no dependencies with
+        OSGI, so they can be deployed as POJO's., In other words, if you put the
+        bundles in your classpath, you should be able to deploy a JXTA<sup>TM</sup>
+        application, as if you were using the regular JAR...<br>
+        ..but with one big difference! If you rermove, say, <strong>net.jxse.jetty</strong>-
+        you will <strong>not</strong> end up with runtime exceptions. Instead,
+        you will not be able to use the JXTA<sup>tm</sup> HTTP service provided
+        by Jetty. This is a big advantage if you only need TCP endpoint services
+        for your applications. Another example are the two databases - derby and
+        H2- which are shipped with the standard JXTA<sup>TM</sup> jar; you can
+        select one or the other for your application, but both jars need to be
+        available on the classpath. The modular approach provided by OSGI
+        allows, you to select the jar (bundle) you need, and skip the other.This
+        way you application can really benefit from light-weight components
+        without any unnecessary clutter! <br>
+        <br>
+        One bundle uses the others: net.jxse.practical.jxta, which implements
+        the code of the corresponding <a href="http://www.scribd.com/doc/47538921/Practical-JXTA-II#scribd">book</a>.
+        With respect to the original code, the 2.8x version of JXTA<sup>TM</sup>
+        makes a functional distinction between:<br>
+        <br>
+        <ul>
+          <li>net.jxta: core functionality</li>
+          <li>net.jxta.platform: configuration code (i.e. NetworkManager and
+            NetworkConfigurator)</li>
+          <li>Third party additions (Jetty, Netty, Derby, etc.)</li>
+        </ul>
+        The level of J<em>P2P Core </em>implements the JP2P container. This is
+        also a bundle which can be used as a POJO. The container is not
+        dependent on JXTA<sup>TM</sup> either. This is handled by the
+        net.jp2p.jxta bundle. Only at the level of the four bundles that
+        complete the JP2P core package, the specific OSGI dependency is made,
+        all of which provide specific services for the JP2P
+        container:net,chaupal: general services:<br>
+        <br>
+        <ul>
+          <li>net.jp2p.jxse.compatibility: a bridge that allows existing JXTA<sup>TM</sup>
+            code to run on the JP2P container</li>
+          <li>net.jp2p.chaupal.jxta: JXTA<sup>TM</sup> services</li>
+          <li>net.jp2p.chaupal.jxta.platofrm: JXTA<sup>TM</sup> platform
+            services. </li>
+        </ul>
+        These four bundles use the OSGI declarative service mechanism to
+        register their services to the JP2P container. If one of these bundles
+        is not available or not started, the corresponding JP2P services are not
+        registered, and cannot be used by the JP2P container.<br>
+        <br>
+        At the top level, there are three bundles that are specific to Eclipse
+        and Equinox, and these provide tools for the Eclipse RCP, such as
+        templates, perspectives and, in the particular case of
+        net.jp2p.chaupal.equinox, jp2p services that has dependencies with
+        equinox code. This bundle will therefore not work on Apache Felix or
+        Knopflerfish without additional handwork.<br>
+        &nbsp;<br>
+        <br>
+      </div>
+    </section>
+    <table summary="Navigation footer" width="100%">
+      <tbody>
+        <tr>
+          <td align="left" width="40%"><br>
+          </td>
+          <td align="center" width="20%"><br>
+          </td>
+          <td align="right" width="40%">&nbsp;<a accesskey="n" href="arch02.html">Next</a></td>
+        </tr>
+        <tr>
+          <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
+          <td align="center" width="20%"><a accesskey="h" href="chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
+          <td align="right" valign="top" width="40%">&nbsp;2.2 Chaupal JP2P
+            Components</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><small>Hosted on GitHub Pages � Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
     </div>
     <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
