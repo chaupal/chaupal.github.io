@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Anatomy of a Chaupal JP2P Project Bundle</title>
+    <link rel="stylesheet" href="../../stylesheets/styles.css">
+    <link rel="stylesheet" href="../../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <table summary="Navigation header" width="100%">
+        <tbody>
+          <tr>
+            <th colspan="3" align="center">1.&nbsp;Introduction</th>
+          </tr>
+          <tr>
+            <td align="left" width="20%"><a accesskey="p" href="ch01s02.html">Prev</a>&nbsp;</td>
+            <th align="center" width="60%">&nbsp;</th>
+            <td align="right" width="20%">&nbsp;<a accesskey="n" href="ch01s04.html">Next</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <header>
+        <h1>The Chaupal Container for JAVA P2P applications</h1>
+      </header>
+      <section>
+        <div class="chapter" lang="en">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h2><a name="introduction"></a>1.3. The Anatomy of a Chaupal
+                  JP2P Project Bundle</h2>
+              </div>
+            </div>
+          </div>
+          If you are a seasoned OSGI developer, you may have noticed that the
+          bundle project that was made, is <em>almost</em> identical to a
+          regular OSGI bundle. The only changes to regular plugin-project is
+          that:<br>
+          <br>
+          <ul>
+            <li>The Activator derives from
+              net.jp2p.chaupal.activator.Jp2pBundleActivator</li>
+            <li>A JP2P-INF folder has been made with a jp2p-1.0.0.xml file in
+              it.</li>
+          </ul>
+          <p>These two features make a Chaupal JP2P project! Behind the scenes,
+            the activator is busy checking the OSGI container for bundles that
+            contain the resources that are defined in the jp2p XML file, and
+            when it finds all the required resource, it creates a <em>jp2p
+              container</em> that will hold these resources.</p>
+          <p>If you are a seasoned JXTA developer, you may also notice that the
+            project actually represents a JXTA<sup>TM</sup> <em>Rendezvous
+              Service</em>.In Chaupal, the functionality provided by JXTA<sup>TM</sup><em>
+            </em>is transformed in a format that the Chaupal JP2P container can
+            understand (and parse). In fact, the Chaupal JP2P container is
+            little more than a light-weight OSGI wrapper around the core JXTA<sup>TM</sup>&nbsp;
+            functionality. You may wonder why we decided to take this approach
+            and not embed the JXTA<sup>TM</sup> classes in a more
+            straightforward fashion. </p>
+          <p>There are a number of reasons for doing so:</p>
+          <ol>
+            <li>The Chaupal team was facing a licensing problem with the JXTA<sup>TM</sup>
+              code, since Oracle bought SUN and support for JXTA<sup>TM</sup>
+              was discontinued. By developing a new container in which JXTA<sup>TM</sup>
+              could be 'plugged in', we were able to utilise the existing
+              functionality, but still develop under an Apache 2.0 license.</li>
+            <li>JXTA<sup>TM</sup>&nbsp; is, from a developer's perspective,
+              basically less a matter of programming and more one of configuring
+              a peer-to-peer node. Most developers will use very comparable
+              configurations, and only start their programming when messages are
+              relayed throughout the network. By using XML, this practice is
+              enforced.</li>
+            <li>From a configuration perspective, the NetworkManager and
+              NetworkConfigurator classes are not really different than, say a
+              PeerGroup or a DiscoveryService. The Chaupal container considers
+              all these to be JP2P services,, which allows for a more versatile
+              manner of configuring your P2P network </li>
+            <li>The JXTA<sup>TM</sup>specifications were made prior to the rise
+              of social media and new connection structures, such as web
+              sockets. The Chaupal container is more extensible, because it uses
+              the highly modular approach of OSGI.</li>
+          </ol>
+          In order to get a feel for the Chaupal approach, open the
+          jp2p-1.0.0.xml file in an editor. Eclipse has a very good editor
+          hidden in the <em>Web, XML, JavaEE and OSGI Enterpise </em>section
+          of the Luna update site, so you may want to install this software
+          first:<br>
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
+          <ul>
+            <li>&nbsp;Help -&gt; Install new software</li>
+            <li>Select the&nbsp; 'Luna' repository&nbsp;&nbsp;and choose the <em>Eclipse
+                Editors and Tools</em> from the section mentioned above</li>
+          </ul>
+          Restart Eclipse and open the XML file with the provided XML Editor:<br>
+          <br>
+          <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;properties&gt;
+    &lt;home-folder&gt;${user.home}/.jxta/${bundle-id}&lt;/home-folder&gt;
+  &lt;/properties&gt;
+  &lt;persistence-service context="chaupal"/&gt;
+  &lt;network-manager clear-config="true"&gt;
+    &lt;properties&gt;
+      &lt;config-mode&gt;RENDEZVOUS&lt;/config-mode&gt;
+      &lt;peer-id create="true" persist="true"/&gt;
+    &lt;/properties&gt;
+    &lt;network-configurator&gt;
+       &lt;properties&gt;&lt;/properties&gt;
+       &lt;tcp&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;9715&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;
+       &lt;/tcp&gt;
+       &lt;http&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;8081&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;    
+       &lt;/http&gt;
+       &lt;multicast enabled="true"/&gt;
+    &lt;/network-configurator&gt;
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
+</pre>
+          <p>JXTA developers will immediately see the familiar outlines of a
+            very common Rendezvous configuration. In fact, it is one of the
+            first examples which is presented in the book <a href="http://www.scribd.com/doc/47538921/Practical-JXTA-II#scribd">Practical
+              JXTA II</a> by Jérôme Verstrynge. However, with a few
+            modifications! Let's examine the code above a bit closer:<br>
+          </p>
+          <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;properties&gt;
+    &lt;home-folder&gt;${user.home}/.jxta/${bundle-id}&lt;/home-folder&gt;
+  &lt;/properties&gt;
+  &lt;persistence-service context="chaupal"/&gt;
+&lt;/jp2p-container&gt;
+</pre>The first few lines of the jp2p file (you can actually run this without
+          problems, try it!) has no relationships with any&nbsp; JXTA<sup>TM </sup>code
+          whatsoever. The code tells the system to:<br>
+          <br>
+          <ul>
+            <li>Create a JP2P container</li>
+            <li>'Auto start' it, so that the services are activated when they
+              are parsed successfully</li>
+            <li>Use a folder called ".jxta/org.chaupal.rdv" in the user section
+              of your computer's operating system</li>
+            <li>Persist properties using a service of context 'chaupal', which
+              basically means that the OSGI preferences are used.</li>
+          </ul>
+          <p>It may be clear that JXTA<sup>TM</sup>s NetworkConfigurator will
+            use this location, so it is no longer available there. Instead,
+            Chaupal takes care that the load and save configuration of the
+            NetworkConfigurator use the locations provided by the configuration
+            file. The other settings are rather straightforward for JXTA<sup>TM</sup>developers.
+            If you are new to JXTA<sup>TM</sup>, you can read the section "Jack
+            the Rendezvous peer" in <a href="http://www.scribd.com/doc/47538921/Practical-JXTA-II#scribd">Jérôme
+              Verstrynge's book</a>. You will see that the JP2P configuration
+            file is a representation of the settings that are coded there.</p>
+        </div>
+      </section>
+      <table summary="Navigation footer" width="100%">
+        <tbody>
+          <tr>
+            <td align="left" width="40%"><a accesskey="p" href="ch01s02.html">Prev</a>
+            </td>
+            <td align="center" width="20%"><br>
+            </td>
+            <td align="right" width="40%">&nbsp;<a accesskey="n" href="ch01s04.html">Next</a></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
+            <td align="center" width="20%"><a accesskey="h" href="http://chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
+            <td align="right" valign="top" width="40%">&nbsp;1.2 Setting up the
+              Eclipse IDE and Chaupal Tools</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><small>Hosted on GitHub Pages � Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>

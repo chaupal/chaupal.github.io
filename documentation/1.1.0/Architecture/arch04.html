@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TThe Chaupal JP2P Factories</title>
+    <link rel="stylesheet" href="../../../stylesheets/styles.css">
+    <link rel="stylesheet" href="../../../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../../../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <table summary="Navigation header" width="100%">
+        <tbody>
+          <tr>
+            <th colspan="3" align="center">2. Architecture</th>
+          </tr>
+          <tr>
+            <td align="left" width="20%"><a accesskey="p" href="arch03.html">Prev</a>&nbsp;</td>
+            <th align="center" width="60%">&nbsp;</th>
+            <td align="right" width="20%"><a accesskey="p" href="arch05.html">Next</a>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+      <header>
+        <h1>The Chaupal<br>
+          JP2P Architecture</h1>
+      </header>
+      <section class="1.">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2>2.4 The Chaupal JP2P Factories</h2>
+            </div>
+          </div>
+        </div>
+        Every factory is responsible for a single JP2P component. In fact, one
+        could say that the JP2P XML file represents the factories that are
+        needed, rather than the components. When a JP2P project is launched, the
+        builder:<br>
+        <br>
+        <ol>
+          <li>parses the jp2p-1.0.0.xml file globally to see if all the required
+            factories are available</li>
+          <li>parses the file in more detail, in order to fill the factories
+            with the required data</li>
+          <li>completes the builder with factories that are needed by others</li>
+          <li>Runs the factories in order to build the JP2P container. &nbsp; </li>
+        </ol>
+        If a container is not built, it usually means that a builder is not
+        registered as a declarative service. You will see this in the console,
+        through a message that complains that the builder is waiting for a
+        certain factory (e.g: NetworkManagerFactory if the JXTA <sup>TM </sup>platform
+        bundle is not activated). <br>
+        <br>
+        A factory not only creates a corresponding JP2P component, but it
+        actually starts by creating a <em>property source</em>. The property
+        source actually contains the values that are depicted in the XML file,
+        and come in two flavours:<br>
+        <br>
+        <ol>
+          <li>net.jp2p.container.properties.IJp2pDirectives (the XML attributes)</li>
+          <li>net.jp2p.container.properties.IJp2pProperties (XML properties)</li>
+        </ol>
+        &nbsp;Although the distinction between these is not rigid, one could say
+        that, in general, a directive provides information for the factory,
+        while the properties&nbsp; are needed to configure the JP2P component.
+        If we look at the configuration file we made in the previous section:<br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;properties&gt;
+    &lt;home-folder&gt;${user.home}/.jxta/${bundle-id}&lt;/home-folder&gt;
+  &lt;/properties&gt;
+  &lt;persistence-service context="chaupal"/&gt;
+&lt;/jp2p-container&gt;
+</pre>we can see that the builder gets a <em>directive&nbsp; </em>to
+        auto-start the container, and that one of the properties of the
+        container itself is the location of the home folder.<br>
+        <br>
+        <h3><span style="color: black;">2.4.1: The Build Sequence of a JP2P
+            Component Factory</span></h3>
+        When the builder is ready to run a factory, it follows a certain
+        procedure:<br>
+        <br>
+        <ol>
+          <li>It creates the property source and adds it to a tree of property
+            sources</li>
+          <li>it adds property sources that are needed to successfully build a
+            component</li>
+          <li>When the tree of property sources is complete, it starts to build
+            the components</li>
+          <li>Depending on the type and the provided directives, the services
+            are started</li>
+        </ol>
+        <p>The build process of the components does not follow the tree
+          structure of the property sources. Instead, every factory is notified
+          of the various states that other factories are in, and they can
+          proceed when the correct conditions are met. For instance, the <strong>net.jp2p.chaupal.jxta.platform;NetworkManagerFactory
+            </strong>should not start if the <strong>net.jp2p.chaupal.jxta.platform.configurator.NetworkConfiguratorFactory</strong>
+          is not ready. Therefore the construction of the <strong>NetworkManager</strong>
+          component is delayed until all the configuration properties have been
+          set.</p>
+        <p> The builder therefore dispatches a number of <strong>net.jp2p.container.builder.ICompositeBuilderListener.BuilderEvents</strong>
+          to all the factories:</p>
+        <ul>
+          <li>PROPERTY_SOURCE_PREPARED</li>
+          <li>PROPERTY_SOURCE_CREATED</li>
+          <li>COMPONENT_PREPARED</li>
+          <li>COMPONENT_CREATED</li>
+          <li>COMPONENT_STARTED</li>
+          <li>FACTORY_COMPLETED</li>
+        </ul>
+        There are two types of factories, which implement a corresponding
+        interface:<br>
+        <br>
+        <ul>
+          <li><strong>net.jp2p.container.factory.IPropertySourceFactory</strong></li>
+          <li><strong>net.jp2p.container.factory.IComponentFactory</strong></li>
+        </ul>
+        Obviously the latter is derived from the former. As may be expected, a
+        propertysource factory does not create a JP2P component, but just
+        properties. The <strong>net.jp2p.container.startup.StartupServiceFactory</strong>
+        is a good example of this type of factory, as it little more than follow
+        the <strong>BuilderEvents</strong>, and start a service if these happen
+        to be created. The <strong>net.jp2p.container.log.LoggerFactory</strong>
+        is another fine example, as it displays information on the build
+        process, and is no longer needed once the container is complete.<br>
+        A special type of propertysource factories have been implemented for <strong>net.jp2p.chaupal.jxta.platform.configurator.NetworkConfiguratorFactory.
+          </strong>If we take a closer look at the jp2p-1.0.0.xml file:<br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  ...
+    &lt;network-configurator&gt;
+       &lt;properties&gt;&lt;/properties&gt;
+       &lt;tcp&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;9715&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;
+       &lt;/tcp&gt;
+       &lt;http&gt;
+         &lt;properties&gt;    
+            &lt;port&gt;8081&lt;/port&gt;
+            &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+            &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+         &lt;/properties&gt;    
+       &lt;/http&gt;
+       &lt;multicast enabled="true"/&gt;
+    &lt;/network-configurator&gt;
+  ...
+&lt;/jp2p-container&gt;
+</pre> we see that the properties of the NetworkConfigurator have been grouped
+        together in logical units, such as http&nbsp; tcp, multicast and so on.
+        Internally, the&nbsp; <strong>NetworkConfiguratorFactory </strong>is
+        completed by a&nbsp; number of property source factories that complete
+        the platform settings. <br>
+        <br>
+        A property source factory implements the <strong>net.jp2p.container.builder.ICompositeBuilderListener
+          </strong>interface, which contains one method:<br>
+        <br>
+        <strong>public void</strong> notifyChange(
+        ComponentBuilderEvent&lt;T&gt; event );<br>
+        <br>
+        Every factory must override this method in order to determine when a
+        next state of the factory should start.<br>
+        &nbsp;<br>
+        The component factories provide a <strong>getComponent() </strong>method
+        that is used to fill the container. After the build process has
+        completed, only these components are therefore available in the
+        container, as the factories and builders are cleaned up and removed from
+        the VM. <br>
+        <br>
+        A consequences of this approach is that a lot of services can be
+        positioned anywhere in the XML file; <br>
+        <br>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container id="org.chaupal.rdv" name="RDV" auto-start="true"&gt;
+  &lt;network-manager clear-config="true"&gt;
+    &lt;network-configurator&gt;
+       &lt;tcp&gt;...&lt;/tcp&gt;
+       &lt;http&gt;...&lt;/http&gt;
+       &lt;multicast enabled="true"/&gt;
+    &lt;/network-configurator&gt;
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
+</pre>
+        <p>The parent-child structure of the above XML file is more a matter of
+          convention than that the parser requires this; as long as the
+          factories start the creation of JP2P components at the correct moment,
+          the container should be built in the cortrect fashion. The structure <em>does</em>
+          have consequences for the way the components are stored in the
+          container (and displayed in the UI). As a result, a JP2P container
+          tends to be flatter than than the corresponding JXTA<sup>TM</sup>
+          application.</p>
+        <h3>Licensing...</h3>
+        <p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
+        <p><a href="https://github.com/chaupal/jxse">JXSE</a> is still governed
+          by <a href="jxta-license.txt">the JXTA license</a>, which cannot be
+          changed. New code by Chaupal that extends/modifies JXSE is governed by
+          the Apache License, version 2.0, and must be committed to the <a href="https://github.com/chaupal/jp2p">JP2P</a>
+          GitHub repository.</p>
+      </section>
+      <table summary="Navigation footer" width="100%">
+        <tbody>
+          <tr>
+            <td align="left" width="40%">&nbsp;<a accesskey="n" href="arch03.html">Prev</a><br>
+            </td>
+            <td align="center" width="20%"><br>
+              <br>
+            </td>
+            <td align="right" width="40%">&nbsp;<a accesskey="n" href="arch05.html">Next</a></td>
+          </tr>
+          <tr>
+            <td align="left" valign="top" width="40%">Chaupal User Guide&nbsp;</td>
+            <td align="center" width="20%"><a accesskey="h" href="chaupal.github.io/documentation/1.1.0/contents.html">Home</a></td>
+            <td align="right" valign="top" width="40%">&nbsp;2.5 </td>
+          </tr>
+        </tbody>
+      </table>
+      <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+  </body>
+</html>

@@ -1,252 +1,102 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>The Chaupal Organisation</title>
-
     <link rel="stylesheet" href="../stylesheets/styles.css">
     <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
     <link rel="stylesheet" href="../stylesheets/codeblock.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   </head>
-  <body>
+  <body><br>
+    <br>
     <div class="wrapper">
       <header>
-        <h1>The JXSE-OSGI Bundles</h1>
+        <h1>The JP2P Container</h1>
       </header>
       <section>
-<P >The 2.8.0 release of JXSE has finally made some improvements to ease the  integration with OSGI. The JXSE-OSGI
-bundles form a set of wrappers around the JXSE code, which allows them to function in an OSGI container, such as Equinox or Felix. This
-tutorial aims to show how to get JXSE running in OSGI. The JXSE-OSGI bundles are available as as an Eclipse update site, so it has never
-been easier to run JXSE in OSGI. </P>
-<P >This tutorial assumes you have a good working
-knowledge of the Eclipse IDE. We will be working in the Plugin
-Perspective of the IDE.</P>
-<H2 >Setting up</H2>
-<P >Setting up the JXSE bundles in the Eclipse IDE
-comprises of the following steps:</P>
-<UL>
-	<LI>Setting up a general Eclipse project</LI>
-	<LI>Creating a target and a launch configuration
-	in the project</LI>
-	<LI>Creating an JXSE bundle project</LI> 
-	<LI> Select  <font FACE="Courier New, monospace">
-	new &rarr; other&rarr; general &rarr; project <font FACE="Times New Roman, serif">and
-	press 'OK'</font></font></LI>
-</UL>
-
-<P>A
-project is created in the workspace, in which we next define a target
-definition</P>
-<P>(new &rarr; target definition)
-Start with an empty definition and select a name of your choosing ,</P>
-<P>Next add two update sites:</P>
-<table>
-<tr>
-  <td>
-    <p>The Luna update site</p>
-     <P>Select the Eclipse Platform</P>
-   </td>
-   <td>
-     <A HREF="http://download.eclipse.org/eclipse/updates/4.4">http://download.eclipse.org/eclipse/updates/4.4</A>
-   </td>
-</tr>
-<tr>
-  <td> <P>The JXSE-OSGI bundles:</P>
-       <P>Select the Eclipse Platform</P>
-  </td>
-  <td>
-    <A HREF="https://chaupal.github.io/releases/2.8.0/milestone/20150224/alpha/jxse-osgi/site.xml">https://chaupal.github.io/releases/2.8.0/milestone/20150116/alpha/jxse-osgi/site.xml</A>
-    <P>Select the bundles</P>
-  </td>  
-</tr>
-</table>
-
-<P>(the latest releases can be found here: 
-<A HREF="https://chaupal.github.io/releases.html">https://chaupal.github.io/releases.html</A>)</P>
-
-<P>Then set the target definition.</P>
-<H1 >Creating an OSGI Bundle Project</H1>
-<p>Now we have the target set up, we can create a bundle project. This is
-done in the regular fashion. Let's call the project <FONT FACE="Courier New, monospace">org.jxse.test</FONT><FONT FACE="Times New Roman, serif">.
-We will add an Activator class in the Wizard, and allow the wizard to create one.</p>
-<p>After this is completed, open the Activator class and modify it as follows:</p>
-
-<pre class="code">
-  <java class="java">package</java> org.jxse.test;<br>
-  <java class="java">import</java> net.jxse.practical.jxta.PJ2Examples.Examples;
-  <java class="java">import</java> net.jxse.practical.jxta.PracticalJxta2Builder;
-  <br>
-  <java class="java">import</java> org.osgi.framework.BundleActivator;
-  <java class="java">import</java> org.osgi.framework.BundleContext;
-  <br>
-  <java class="java">public class </java>Activator <java class="java">extends </java>PracticalJxta2Builder <java class="java">implements</java> BundleActivator{
-  <br>
-  <java class="java">public static final</java> String S_BUNDLE_ID = "org.jxse.test";
-  <java class="java">private static</java> BundleContext context;	
-  <br>	
-  <java class="java">  public</java> Activator() {
-  <java class="java"> 	 super</java>( S_BUNDLE_ID, Examples.A_100_Starting_And_Stopping_JXTA);
-    }
-
-  <java class="java">  static</java> BundleContext getContext() {
-  <java class="java">	 return</java> context;
-    }
-
-    @Override
-  <java class="java">	public void</java> start(BundleContext bundleContext) <java class="java"> throws </java>Exception {
-	  context = bundleContext;
-	  <java class="java">super</java>.start(bundleContext);
-    }
-
-    @Override
-  <java class="java">	public void </java>stop(BundleContext bundleContext)<java class="java"> throws </java>Exception {
-  <java class="java">	  super.</java>stop(bundleContext);
-	  context = null;
-    }
-}
-</pre>
-<p>Next we have to create a launch configuration for an OSGI framework.
-Include the bundle we just made, and add the required bundles. Clear all the bundles from the <i>Target Platform</i>, then
-<i>'Add the required bundles'</i> Don't forget to include:</p>
-<UL>
-	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.console</FONT></P>
-	<LI><P>the	three <FONT FACE="Courier New, monospace">org.apache.felix.gogo</FONT><FONT FACE="Times New Roman, serif">
-	bundles</FONT></P>
-	<LI><P><FONT FACE="Courier New, monospace">org.eclipse.equinox.ds</FONT></P>
-</UL>
-<p><i>Validate</i> the bundles and ensure that all the dependnecies have been met.</p>
-<p>When you run the code you will find that you are running one of the
-examples from J&eacute;r&ocirc;me Verstrynge's book, <A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
-JXTA II</A>. These examples are shipped as one of the bundles</p> 
-
-<H1 >A little background information</H1>
-<P>As was mentioned earlier, the <FONT FACE="Courier New, monospace">JXSE-OSGI</FONT>
-bundles form a wrapper around the JXSE code. The wrappers are mainly
-intended to break the dependencies with third party libraries, such
-as Jetty and Netty, so that the regular Eclipse replacements can be
-used instead. However, the JXSE code is also divided over two
-bundles, separating the code related to configuration (<I>platform</I><SPAN STYLE="font-style: normal">)
-from the core functionality. The complete set of bundles are the
-following:</SPAN></P>
-<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
-	<COL WIDTH=77*>
-	<COL WIDTH=50*>
-	<COL WIDTH=129*>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.osgi</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Core JXSE 
-			</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.osgi.platform</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >configuration</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P >e.g. NetworkManager, NetworkConfigurator</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.netty</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Netty transport bundle</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.jetty</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Jetty Servlet Http</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.derby</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Derby database support</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.h2</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >H2 database support</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >org.spongycastle.fragment</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Spongycastle support</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P ><BR>
-			</P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=30%>
-			<P >net.jxse.pracxtical.jxta</P>
-		</TD>
-		<TD WIDTH=20%>
-			<P >Practical JXTA II</P>
-		</TD>
-		<TD WIDTH=50%>
-			<P >See:
-			<A HREF="http://freecomputerbooks.com/Practical-JXTA-II.html">http://freecomputerbooks.com/Practical-JXTA-II.html</A></P>
-		</TD>
-	</TR>
-</TABLE>
-<p>In the <a href="http://chaupal.github.io/wiki/jxse-osgi2.html">next</a> tutorial you will see how to get an existing JXTA project running in OSGI</p>
-
-<h3>Licensing...</h3>
-<p>JXTA is a registered trademark of Sun Microsystems/Oracle.</p>
-
-<p><a href="https://github.com/chaupal/jxse">JXSE</a> is still governed by
-<a href="jxta-license.txt">the JXTA license</a>,
-which cannot be changed. New code by Chaupal that extends/modifies JXSE is
-governed by the Apache License, version 2.0, and must be committed to the 
-<a href="https://github.com/chaupal/jp2p">JP2P</a> GitHub repository.</p>
+        <p>For this tutorial, we will be developing with the:</p>
+        <ul>
+          <li><a href="http://chaupal.github.io/releases.html">2.8.0 release</a>
+            of JXSE or higher</li>
+          <li><a href="http://chaupal.github.io/releases.html">1.1.0 release</a>
+            of JP2P/Chaupal or higher</li>
+        </ul>
+        Both versions are currently still in an alpha stage, so some changes may
+        occur. We will try to keep the documentation in par with these changes.
+        <br>
+        &nbsp;The bundles are available as as Eclipse update sites, so it has
+        never been easier to run JXSE in OSGI. <br>
+        <p>&nbsp;We will be working in the Plugin Perspective of the IDE.</p>
+        <h2>Setting up</h2>
+        <p>If you are new to Eclipse, then you can <a href="https://eclipse.org/downloads/">download
+            </a>an Eclipse package and install it on your computer. In this
+          tutorial, we will be developing with <a href="https://eclipse.org/downloads/packages/eclipse-rcp-and-rap-developers/lunasr2">Eclipse
+            for RCP and RAP Developers</a>. For development, the latest release
+          ( currently Luna) should be good.</p>
+        <p>Unzip the downloaded package to a location of your choosing (e.g.
+          C:\Program Files\ Eclipse\Luna\Chaupal) and run (on Windows )
+          eclipse.exe.&nbsp; The Eclipse IDE should open for you to work with.
+          Follow the guidelines of the wizard and select a <em>workspace</em>
+          on a location of your choosing. This is where you will be developing
+          your projects. In a few minutes you should be up and running! You now
+          have a bare-bones development environment to work with.<br>
+          It is recommended to download the most recent updates for the IDE. For
+          Windows<sup>TM</sup> users, you'll have to (re-) start the IDE with
+          Administrator rights and select:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Help -&gt; Check for Updates</p>
+        <p>Run the wizard and restart Eclipse.</p>
+        <p>In order to unleash Chaupal, you will need to add Chaupal
+          functionality to your IDE. You can do this by adding the latest
+          release of the Chaupal <a href="https://chaupal.github.io/releases/2.8.0/milestone/20141015/jxse-osgi/site.xml">jp2p-ui
+            update site</a> to your IDE.&nbsp; Select <em>Window -&gt;
+            Preferences -&gt; Install/Update</em> -<em>&gt; Available Software
+            Sites</em> and then <em>'Add'</em> a '<em>New Site'</em>. Enter a
+          general text (e.g Chaupal) and then include the URL to the most
+          current release of jp2p-ui (e.g: <a href="https://chaupal.github.io/releases/jp2p-ui/1.1.0/20150516/site.xml">https://chaupal.github.io/releases/jp2p-ui/1.1.0/20150516/site.xml</a>)
+          . Then press&nbsp; 'OK' to get back to the IDE. </p>
+        <p>Next we need to install the bundles. Go to <em>Help -&gt; Install
+            new software </em>and select <em>(work with)&nbsp; </em>the
+          update site you just made. If all went well, you should be able to
+          select the 'Chaupal JP2P' option. Select this and follow the
+          guidelines of the wizard. Restart Eclipse and wait for the IDE to come
+          up again.</p>
+        <p>We are almost done! Create a new RCP plugin project by following the
+          next steps:<br>
+        </p>
+        <ul>
+          <li>Select File-&gt; New -&gt; Plugin Project</li>
+          <li>Add the required data and select the "Eclipse Version" option
+            (press Next)</li>
+          <li>Select the "3.x Rich Client Application" option (press Finish) </li>
+        </ul>
+        Eclipse will now add a bare-bones RCP application to your workbench. You
+        can run this application by selecting<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Run -&gt; Debug As -&gt;
+        Eclipse Application<br>
+        <br>
+        So far, this has all been standard Eclipse stuff. But we can start to
+        make things more interesting by selecting the "Chaupal JP2P Container
+        Perspective" to our RCP:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Window -&gt; Open Perspective
+        -&gt; Other<br>
+        <br>
+        When you select this perspective, the User Interface will suddenly show
+        all kinds of screens, which are currently mostly empty. <br>
+        Congratulations! You are ready for Chaupal JP2P app development!<br>
+        <br>
+        Next we will be adding an<a href="http://chaupal.github.io/wiki/jxse-osgi2.html">
+          existing JXTA application to the Chaupal container</a><br>
       </section>
       <footer>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <script src="javascripts/scale.fix.js"></script>  
+    <script src="javascripts/scale.fix.js"></script>
   </body>
 </html>
