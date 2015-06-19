@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>The Chaupal Organisation</title>
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="../stylesheets/codeblock.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Anna the Edge Peer</h1>
+      </header>
+      <section>
+        <p>In the previous section, we already developed a fully functional
+          Rendezvous Peer, merely by setting up the correct configuration. The
+          peer is based on Jérôme's Verstrynge's book <a href="http://freecomputerbooks.com/Practical-JXTA-II.html">Practical
+            JXTA II,</a> which includes many other examples, such as "Anna the
+          Edge Peer". Anna is supposed to connect to the Rendezvous Peer, so
+          let's <em>add</em> this peer to our workspace! Add a new JP2P bundle
+          project, like we did previously, but now select a JXSE Bunde Edge
+          Project, call it <span style="font-style: italic;">org.mydomain.anna</span>,
+          and press "Finish". </p>
+        <p>When you open the jp2p-1.0.0.xml configuration file, then you will
+          see the following:</p>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container name="Anna the Edge Peer" auto-start="true"&gt;
+  &lt;properties&gt;
+    &lt;bundle-id&gt;org.mydomain.anna&lt;/bundle-id&gt;
+    &lt;home-folder&gt;${user.home}/.jxta/${bundle-id}&lt;/home-folder&gt;
+  &lt;/properties&gt;
+  &lt;persistence-service context="Chaupal"/&gt;
+  &lt;sequencer-service name="rdv"&gt;
+    &lt;properties&gt;
+      &lt;watch-id&gt;org.mydomain.rdv.netpeergroupservice&lt;/watch-id&gt;
+        &lt;status&gt;active&lt;/status&gt;
+        &lt;time-out&gt;9000&lt;/time-out&gt;
+    &lt;/properties&gt;
+  &lt;/sequencer-service&gt;
+  &lt;network-manager id="org.condast.p2p.manager" wait-for="rdv"&gt;
+    &lt;properties&gt;
+      &lt;config-mode&gt;EDGE&lt;/config-mode&gt;
+      &lt;peer-id create="true" persist="true"/&gt;
+    &lt;/properties&gt;
+    &lt;network-configurator id="org.condast.p2p.network" clear-config="true"&gt;
+       &lt;properties&gt;
+         &lt;security&gt;
+           &lt;password&gt;admin&lt;/password&gt;
+         &lt;/security&gt;
+         &lt;tcp&gt;
+           &lt;properties&gt;  <br>             &lt;port&gt;9716&lt;/port&gt;
+             &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+             &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;<br>           &lt;/properties&gt;<br>         &lt;/tcp&gt;
+         &lt;http&gt;
+           &lt;properties&gt;  <br>             &lt;port&gt;8082&lt;/port&gt;
+             &lt;incoming-status&gt;true&lt;/incoming-status&gt;
+             &lt;outgoing-status&gt;true&lt;/outgoing-status&gt;
+            &lt;/properties&gt;  <br>          &lt;/http&gt;
+          &lt;multicast enabled="false"/&gt;
+          &lt;seed-list type="rdv" use-only="false" max-clients="5"&gt;
+            &lt;properties&gt;
+              &lt;condast1 net="tcp"&gt;localhost:9715&lt;/condast1&gt;
+            &lt;/properties&gt;
+          &lt;/seed-list&gt;
+          &lt;seed-list type="relay" use-only="false" max-clients="5"&gt;
+            &lt;properties&gt;
+              &lt;condast2 net="http"&gt;localhost:9715&lt;/condast2&gt;
+            &lt;/properties&gt;
+          &lt;/seed-list&gt;
+        &lt;/properties&gt;
+    &lt;/network-configurator&gt;
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
+</pre>
+        <p></p>
+        <h2>Code Walkthrough</h2>
+        <p>Many of the settings are fairly comparable to the previous P2P node
+          we made, and the many of the other settings are explained in the book,
+          especially the settings of the NetworkConfigurator. The connection
+          with Rendezvous Node is determined by the seed list, where the seeds
+          have to point to the correct ports that are provided by the Rendezvous
+          peer:</p>
+        <p> </p>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container name="Anna the Edge Peer" auto-start="true"&gt;
+  ...
+  &lt;network-manager id="org.condast.p2p.manager" wait-for="rdv"&gt;
+    &lt;network-configurator clear-config="true"&gt;
+       &lt;properties&gt;
+          ... 
+          <strong>&lt;seed-list type="rdv" use-only="false" max-clients="5"&gt;
+            &lt;properties&gt;
+              &lt;condast1 net="http"&gt;localhost:8081&lt;/condast1&gt;
+            &lt;/properties&gt;
+          &lt;/seed-list&gt;
+          &lt;seed-list type="relay" use-only="false" max-clients="5"&gt;
+            &lt;properties&gt;
+              &lt;condast2 net="tcp"&gt;localhost:9715&lt;/condast2&gt;
+            &lt;/properties&gt;
+          &lt;/seed-list&gt;</strong>
+        &lt;/properties&gt;
+    &lt;/network-configurator&gt;
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
+</pre> <span style="color: #393939;"></span>
+        <p>However, we face a small problem. In order to run the example, we
+          need to be sure that the rendezvous node is started prior to the
+          rendezvous node. Therefore a new JP2P <em>sequencer service</em> is
+          added to ensure the proper startup sequence. The important bits of
+          code are depicted below:</p>
+        <pre class="xml-code">&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;jp2p-container name="Anna the Edge Peer" auto-start="true"&gt;
+  ...
+  <strong>&lt;sequencer-service name="rdv"&gt;
+    &lt;properties&gt;
+      &lt;watch-id&gt;org.mydomain.rdv.netpeergroupservice&lt;/watch-id&gt;
+        &lt;status&gt;active&lt;/status&gt;
+        &lt;time-out&gt;9000&lt;/time-out&gt;
+    &lt;/properties&gt;
+  &lt;/sequencer-service&gt;</strong><br>  ...<br>&nbsp;&lt;network-manager<strong> wait-for="rdv"</strong>&gt;
+    ...
+  &lt;/network-manager&gt;
+&lt;/jp2p-container&gt;
+</pre>
+        <p>First the sequencer service is defined and given a name. In this case
+          we call it 'rdv', but it could be anything. Then we tell the service
+          to keep an eye out for the activation of </p>
+        <pre class="xml-code">org.mydomain.rdv.netpeergroupservice</pre>
+        <p>Note that this is the netpeergroup service from the <span style="font-style: italic;">other</span>
+          jp2p bundle! When the service is activated, it will wait for another
+          nine seconds before starting.</p>
+        <p>But exactly what will start? Well, the directive 'wait-for', which is
+          included in the networkmanager service, is taking care of that. This
+          service is told to wait for 'rdv' (or whatever name you provided for
+          the sequencer service), and start when the sequencer fires. This
+          allows for a fine-grained control between the two projects. </p>
+        <p>When using the sequencer service, one has to keep in mind that it
+          only works in DeveloperModes.DEBUG, because only then build process of
+          the container is shared with other bundles. In a normal situation,
+          your Rendezvous node will be located on a server, and the edges will
+          present on different computers. The option of running multiple nodes
+          in one workspace, is therefore only useful when developing and
+          debugging a P2P network.</p>
+        <p>If all went well, you will see the two JP2P projects run in the
+          IDE.&nbsp;</p>
+        <img alt="" src="../../images/JP2PViewer.png"><br>
+        The JP2P container viewer shows the properties and directives which are
+        entered in the jp2p-1.0.0.xml file. Below that, the JXSE Module viewer
+        shows how these proeprties and directives translate to the the settings
+        in JXTA<sup>TM</sup> <span style="font-family: Times New Roman,serif;">modules.
+          If you select The Rendezvous service of the </span>Chaupal RDV Peer,
+        you will see that the 'isRDV' property is set. Do the same for Anna the
+        Edge, and you should see that this not 'isConnectedToRDV', as depicted
+        above. If this is the case, then you have just made your first P2P
+        network!<br>
+        <br>
+        <br>
+      </section>
+      <font face="Times New Roman, serif">
+        <footer>
+          <p><small>Hosted on GitHub Pages — Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+        </footer>
+      </font></div>
+    <font face="Times New Roman, serif">
+      <script src="javascripts/scale.fix.js"></script> </font>
+  </body>
+</html>
